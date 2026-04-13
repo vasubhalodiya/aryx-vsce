@@ -1,0 +1,56 @@
+{
+  "name": "aryx-chat-ui",
+  "displayName": "Aryx",
+  "description": "React-based customizable chat-style VS Code sidebar UI",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:aryxChatView",
+    "onCommand:aryxChat.focus"
+  ],
+  "main": "./extension.js",
+  "scripts": {
+    "build:webview": "esbuild src/main.jsx --bundle --format=iife --platform=browser --target=es2020 --outfile=media/main.js",
+    "build": "npm run build:webview"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "aryxChat.focus",
+        "title": "Aryx: Focus"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aryxChatContainer",
+          "title": "Aryx",
+          "icon": "media/aryx.svg"
+        }
+      ]
+    },
+    "views": {
+      "aryxChatContainer": [
+        {
+          "id": "aryxChatView",
+          "name": "Tasks",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "lucide-react": "^1.8.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.11"
+  }
+}

@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #161618;
+  --secondary-color: #1f2122;
+  --select-modal-color: #3e3f42;
+  --select-modal-hover-color: #4d4e51;
+  --chat-background-color: #242628;
+  --chat-edit-cancle-color: #353739;
+  --key-color: #2e3032;
+  --hover-color: #28282a;
+  --hover-icon-change-color: #39393a;
+  --popup-hover-color: #4d4e51;
+  --accent-color: #11b5d2;
+  --soft-accent-color: rgb(17, 181, 210, 0.2);
+  --light-color: #f1f1f1;
+  --soft-light-color: #e0e0e0;
+  --light-chat-color: #d1d1d1;
+  --text-color: #b5b5b5;
+  --input-color: #1a1b1e;
+  --code-block-color: #1c1d21;
+  --overlay-color: rgba(5, 5, 5, 0.5);
+  --border-color: rgba(252, 252, 252, 0.12);
+  --error-color: #ff7575;
+  --success-color: #75dc90;
+  --warning-color: #f6c36a;
+  --border-radius-mini: 10px;
+  --border-radius: 12px;
+  --border-radius-trigger: 13px;
+  --border-radius-chat: 16px;
+  --border-radius-medium: 18px;
+  --border-radius-big: 24px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  color: var(--light-color);
+  background-color: var(--primary-color);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+.app-shell {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar */
+*::-webkit-scrollbar {
+  width: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* Topbar */
+.topbar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: var(--primary-color);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 10;
+}
+
+.brand {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Settings Panel */
+.settings-panel {
+  padding: 16px;
+  background-color: var(--secondary-color);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-label {
+  font-size: 11px;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settings-panel input,
+.settings-panel select {
+  width: 100%;
+  height: 36px;
+  background-color: var(--chat-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-mini);
+  color: var(--light-color);
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text-btn {
+  background-color: var(--accent-color);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Chat List */
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.empty {
+  color: var(--text-color);
+  text-align: center;
+  margin-top: 40px;
+  font-size: 14px;
+}
+
+/* Message Styles - Matching Vasuu UI */
+.message {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message.user {
+  align-items: flex-end;
+}
+
+.message.assistant {
+  align-items: flex-start;
+}
+
+.message.user .bubble {
+  max-width: 85%;
+  background-color: var(--chat-background-color);
+  color: var(--light-color);
+  padding: 10px 16px;
+  border-radius: var(--border-radius-chat);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+  border: 1px solid var(--border-color);
+}
+
+.message.assistant .bubble {
+  max-width: 100%;
+  color: var(--light-chat-color);
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+}
+
+.meta {
+  font-size: 11px;
+  color: var(--text-color);
+  margin-top: 2px;
+}
+
+.composer-container {
+  padding: 10px 15px 20px;
+  background-color: var(--primary-color);
+  position: relative;
+}
+
+.chat-input-child {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--chat-background-color);
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--border-color);
+  padding: 5px;
+}
+
+.chat-input {
+  width: 100%;
+}
+
+.chat-input textarea {
+  width: 100%;
+  max-height: 200px;
+  min-height: 40px;
+  background: transparent;
+  border: none;
+  color: var(--light-color);
+  font-size: 12px;
+  padding: 4px 8px;
+  padding-top: 0px;
+  margin-top: 8px;
+  resize: none;
+  outline: none;
+  letter-spacing: 0.2px;
+}
+
+.chat-input textarea::placeholder {
+  color: #6a6a6a;
+}
+
+.chat-input-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-input-actions-left {
+  display: flex;
+  gap: 3px;
+  padding-left: 3px;
+}
+
+.action-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 9px;
+  background-color: var(--chat-background-color);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.action-dot:hover {
+  color: var(--light-color);
+  background-color: #393939;
+}
+
+.chat-input-actions-right {
+  padding-right: 1px;
+}
+
+.send-btn {
+  width: 27px;
+  height: 27px;
+  border-radius: 10px;
+  background-color: var(--light-color);
+  border: none;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.send-btn:disabled {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Shimmer/Thinking Effect */
+.shimmer {
+  color: var(--text-color);
+  font-size: 14px;
+  font-weight: 500;
+  background: linear-gradient(90deg, var(--text-color) 0%, var(--light-color) 50%, var(--text-color) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 1.5s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Markdown Support Styles from Vasuu UI */
+.bubble h1, .bubble h2, .bubble h3 { margin-top: 12px; margin-bottom: 8px; color: var(--light-color); }
+.bubble p { margin-bottom: 8px; line-height: 1.6; }
+.bubble ul, .bubble ol { margin-left: 20px; margin-bottom: 8px; }
+.bubble li { margin-bottom: 4px; }
+.bubble code { background-color: var(--code-block-color); padding: 2px 4px; border-radius: 4px;}
+.bubble pre { background-color: var(--code-block-color); padding: 12px; border-radius: 8px; overflow-x: auto; margin: 10px 0; }
+.bubble pre code { background-color: transparent; padding: 0; }
+.bubble a { color: var(--accent-color); text-decoration: underline; }
+.bubble blockquote { border-left: 4px solid var(--border-color); padding-left: 12px; color: var(--text-color); font-style: italic; }
+.bubble table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+.bubble th, .bubble td { border: 1px solid var(--border-color); padding: 8px; text-align: left; }
