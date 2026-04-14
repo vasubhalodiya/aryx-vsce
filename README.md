@@ -1,6 +1,6 @@
 # Aryx VS Code Extension (React + Gemini)
 
-Clean, compact chat UI inspired by Codex-style sidebar.
+Clean, compact chat UI inspired by Aryx-style sidebar.
 
 ## Features
 - Minimal dark UI (no gradient)

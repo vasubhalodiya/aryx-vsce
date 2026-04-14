@@ -43,6 +43,11 @@ class AryxChatViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (message) => {
       try {
+        if (message?.type === 'openSettings') {
+          this._openSettingsTab();
+          return;
+        }
+
         if (message?.type === 'getSettings') {
           const settings = this._getSettings();
           webviewView.webview.postMessage({ type: 'settingsLoaded', settings });
@@ -142,9 +147,10 @@ class AryxChatViewProvider {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; img-src ${webview.cspSource}; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';"
+      content="default-src 'none'; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
     />
-    <link rel="stylesheet" href="${styleUri}" />
+    <link rel="stylesheet" href="${styleUri}?v=${nonce}" />
+    <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'main.css'))}?v=${nonce}" />
     <title>Aryx</title>
   </head>
   <body>
@@ -152,6 +158,63 @@ class AryxChatViewProvider {
     <script nonce="${nonce}" src="${appScriptUri}"></script>
   </body>
 </html>`;
+  }
+
+  _openSettingsTab() {
+    if (this._settingsPanel) {
+      this._settingsPanel.reveal(vscode.ViewColumn.One);
+      return;
+    }
+
+    this._settingsPanel = vscode.window.createWebviewPanel(
+      'aryxSettings',
+      'Aryx Settings',
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [this.extensionUri]
+      }
+    );
+
+    const webview = this._settingsPanel.webview;
+    const nonce = getNonce();
+
+    const appScriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'media', 'settings.js')
+    );
+    const baseStyleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'media', 'styles.css')
+    );
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'media', 'settings.css')
+    );
+
+    webview.html = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
+    />
+    <link rel="stylesheet" href="${baseStyleUri}?v=${nonce}" />
+    <link rel="stylesheet" href="${styleUri}?v=${nonce}" />
+    <title>Aryx Settings</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script nonce="${nonce}" src="${appScriptUri}"></script>
+  </body>
+</html>`;
+
+    this._settingsPanel.onDidDispose(
+      () => {
+        this._settingsPanel = undefined;
+      },
+      null,
+      this.context.subscriptions
+    );
   }
 }
 
@@ -251,7 +314,7 @@ function getNonce() {
   return nonce;
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
   activate,

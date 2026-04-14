@@ -16,8 +16,9 @@
   ],
   "main": "./extension.js",
   "scripts": {
-    "build:webview": "esbuild src/main.jsx --bundle --format=iife --platform=browser --target=es2020 --outfile=media/main.js",
-    "build": "npm run build:webview"
+    "build:webview": ".\\node_modules\\@esbuild\\win32-x64\\esbuild.exe src/App.jsx --bundle --format=iife --platform=browser --target=es2020 --outfile=media/main.js",
+    "build:settings": ".\\node_modules\\@esbuild\\win32-x64\\esbuild.exe src/pages/SettingsPage/SettingsPage.jsx --bundle --format=iife --platform=browser --target=es2020 --outfile=media/settings.js",
+    "build": "npm run build:webview && npm run build:settings"
   },
   "contributes": {
     "commands": [
@@ -39,18 +40,22 @@
       "aryxChatContainer": [
         {
           "id": "aryxChatView",
-          "name": "Tasks",
+          "name": "Aryx",
           "type": "webview"
         }
       ]
     }
   },
   "dependencies": {
-    "lucide-react": "^1.8.0",
+    "@radix-ui/react-select": "^2.2.6",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.552.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
-    "esbuild": "^0.25.11"
+    "esbuild": "^0.25.11",
+    "tailwindcss": "^4.2.2"
   }
 }

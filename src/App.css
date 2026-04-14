@@ -1,0 +1,75 @@
+/* ══════════════════════════════════════════════════
+   LAYOUT — Full-height flex column
+   ══════════════════════════════════════════════════ */
+.app-shell {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ax-bg);
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════
+   TOPBAR — Aryx 36px compact header
+   ══════════════════════════════════════════════════ */
+.topbar {
+  height: var(--toolbar-h);
+  min-height: var(--toolbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--toolbar-px);
+  background: var(--ax-bg);
+  flex-shrink: 0;
+  z-index: 20;
+  -webkit-app-region: drag;
+  /* electron compat */
+}
+
+.brand-small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ax-fg-secondary);
+  text-transform: capitalize;
+  padding-left: 2px;
+  user-select: none;
+  -webkit-app-region: no-drag;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  -webkit-app-region: no-drag;
+}
+
+/* Icon buttons – 26 × 26, Aryx style */
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--ax-fg-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--composer-btn);
+  height: var(--composer-btn);
+  border-radius: var(--r-md);
+  transition: background 80ms ease, color 80ms ease;
+  flex-shrink: 0;
+}
+
+.icon-btn svg
+{
+  width: 16px;
+  height: 16px;
+}
+
+.icon-btn:hover {
+  background: var(--ax-toolbar-hover);
+  color: var(--ax-fg);
+}
+
+.icon-btn:active {
+  opacity: .7;
+}

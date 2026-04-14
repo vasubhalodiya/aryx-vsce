@@ -1329,7 +1329,7 @@
           return dispatcher;
         }
         "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-        var React5 = require_react(), Internals = {
+        var React2 = require_react(), Internals = {
           d: {
             f: noop,
             r: function() {
@@ -1347,7 +1347,7 @@
           },
           p: 0,
           findDOMNode: null
-        }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React5.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+        }, REACT_PORTAL_TYPE = Symbol.for("react.portal"), ReactSharedInternals = React2.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
         "function" === typeof Map && null != Map.prototype && "function" === typeof Map.prototype.forEach && "function" === typeof Set && null != Set.prototype && "function" === typeof Set.prototype.clear && "function" === typeof Set.prototype.forEach || console.error(
           "React depends on Map and Set built-in types. Make sure that you load a polyfill in older browsers. https://reactjs.org/link/react-polyfills"
         );
@@ -2882,7 +2882,7 @@
           "number" === type && getActiveElement(node.ownerDocument) === node || node.defaultValue === "" + value || (node.defaultValue = "" + value);
         }
         function validateOptionProps(element, props) {
-          null == props.value && ("object" === typeof props.children && null !== props.children ? React5.Children.forEach(props.children, function(child) {
+          null == props.value && ("object" === typeof props.children && null !== props.children ? React2.Children.forEach(props.children, function(child) {
             null == child || "string" === typeof child || "number" === typeof child || "bigint" === typeof child || didWarnInvalidChild || (didWarnInvalidChild = true, console.error(
               "Cannot infer the option value of complex children. Pass a `value` prop or use a plain string as children to <option>."
             ));
@@ -18514,14 +18514,14 @@
           ));
         }
         "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-        var Scheduler = require_scheduler(), React5 = require_react(), ReactDOM = require_react_dom(), assign = Object.assign, REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
+        var Scheduler = require_scheduler(), React2 = require_react(), ReactDOM = require_react_dom(), assign = Object.assign, REACT_LEGACY_ELEMENT_TYPE = Symbol.for("react.element"), REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy");
         Symbol.for("react.scope");
         var REACT_ACTIVITY_TYPE = Symbol.for("react.activity");
         Symbol.for("react.legacy_hidden");
         Symbol.for("react.tracing_marker");
         var REACT_MEMO_CACHE_SENTINEL = Symbol.for("react.memo_cache_sentinel");
         Symbol.for("react.view_transition");
-        var MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, ReactSharedInternals = React5.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, NotPending = Object.freeze({
+        var MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, ReactSharedInternals = React2.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, NotPending = Object.freeze({
           pending: false,
           data: null,
           method: null,
@@ -21309,7 +21309,7 @@
           }
         };
         (function() {
-          var isomorphicReactPackageVersion = React5.version;
+          var isomorphicReactPackageVersion = React2.version;
           if ("19.2.5" !== isomorphicReactPackageVersion)
             throw Error(
               'Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:\n  - react:      ' + (isomorphicReactPackageVersion + "\n  - react-dom:  19.2.5\nLearn more: https://react.dev/warnings/version-mismatch")
@@ -21449,12 +21449,9 @@
     }
   });
 
-  // src/App.jsx
-  var import_react6 = __toESM(require_react());
+  // src/pages/SettingsPage/SettingsPage.jsx
+  var import_react3 = __toESM(require_react());
   var import_client = __toESM(require_client());
-
-  // src/pages/ChatPage/ChatPage.jsx
-  var import_react5 = __toESM(require_react());
 
   // node_modules/lucide-react/dist/esm/createLucideIcon.js
   var import_react2 = __toESM(require_react());
@@ -21545,32 +21542,46 @@
     return Component;
   };
 
-  // node_modules/lucide-react/dist/esm/icons/check.js
-  var __iconNode = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-  var Check = createLucideIcon("check", __iconNode);
+  // node_modules/lucide-react/dist/esm/icons/chevron-down.js
+  var __iconNode = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+  var ChevronDown = createLucideIcon("chevron-down", __iconNode);
 
-  // node_modules/lucide-react/dist/esm/icons/copy.js
+  // node_modules/lucide-react/dist/esm/icons/palette.js
   var __iconNode2 = [
-    ["rect", { width: "14", height: "14", x: "8", y: "8", rx: "2", ry: "2", key: "17jyea" }],
-    ["path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2", key: "zix9uf" }]
+    [
+      "path",
+      {
+        d: "M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z",
+        key: "e79jfc"
+      }
+    ],
+    ["circle", { cx: "13.5", cy: "6.5", r: ".5", fill: "currentColor", key: "1okk4w" }],
+    ["circle", { cx: "17.5", cy: "10.5", r: ".5", fill: "currentColor", key: "f64h9f" }],
+    ["circle", { cx: "6.5", cy: "12.5", r: ".5", fill: "currentColor", key: "qy21gx" }],
+    ["circle", { cx: "8.5", cy: "7.5", r: ".5", fill: "currentColor", key: "fotxhn" }]
   ];
-  var Copy = createLucideIcon("copy", __iconNode2);
+  var Palette = createLucideIcon("palette", __iconNode2);
 
-  // node_modules/lucide-react/dist/esm/icons/external-link.js
+  // node_modules/lucide-react/dist/esm/icons/puzzle.js
   var __iconNode3 = [
-    ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
-    ["path", { d: "M10 14 21 3", key: "gplh6r" }],
-    ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
+    [
+      "path",
+      {
+        d: "M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z",
+        key: "w46dr5"
+      }
+    ]
   ];
-  var ExternalLink = createLucideIcon("external-link", __iconNode3);
+  var Puzzle = createLucideIcon("puzzle", __iconNode3);
 
-  // node_modules/lucide-react/dist/esm/icons/log-out.js
+  // node_modules/lucide-react/dist/esm/icons/server.js
   var __iconNode4 = [
-    ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-    ["path", { d: "M21 12H9", key: "dn1m92" }],
-    ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+    ["rect", { width: "20", height: "8", x: "2", y: "2", rx: "2", ry: "2", key: "ngkwjq" }],
+    ["rect", { width: "20", height: "8", x: "2", y: "14", rx: "2", ry: "2", key: "iecqi9" }],
+    ["line", { x1: "6", x2: "6.01", y1: "6", y2: "6", key: "16zg32" }],
+    ["line", { x1: "6", x2: "6.01", y1: "18", y2: "18", key: "nzw8ys" }]
   ];
-  var LogOut = createLucideIcon("log-out", __iconNode4);
+  var Server = createLucideIcon("server", __iconNode4);
 
   // node_modules/lucide-react/dist/esm/icons/settings.js
   var __iconNode5 = [
@@ -21585,241 +21596,83 @@
   ];
   var Settings = createLucideIcon("settings", __iconNode5);
 
-  // src/components/AryxLogo/AryxLogo.jsx
-  var import_react3 = __toESM(require_react());
-  function AryxLogo({ size = 48 }) {
-    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "aryx-logo-container", style: { width: size, height: size } }, /* @__PURE__ */ import_react3.default.createElement(
-      "svg",
-      {
-        viewBox: "0 0 500 500",
-        fill: "currentColor",
-        style: { width: "100%", height: "100%", color: "var(--ax-fg-secondary)", opacity: 0.55 }
-      },
-      /* @__PURE__ */ import_react3.default.createElement("path", { d: "M330.34 313.62h-67.84c-7.65 0-13.85-6.2-13.85-13.85s6.2-13.85 13.85-13.85h67.84c7.65 0 13.85 6.2 13.85 13.85s-6.2 13.85-13.85 13.85Z" }),
-      /* @__PURE__ */ import_react3.default.createElement("path", { d: "M169.65 313.38c-2.36 0-4.74-.6-6.93-1.87-6.62-3.83-8.88-12.31-5.05-18.93l23.78-41.08-23.91-43.21c-3.7-6.69-1.28-15.12 5.41-18.82 6.69-3.71 15.12-1.28 18.82 5.41l31.51 56.94-31.64 54.65c-2.57 4.43-7.22 6.91-12 6.91Z" }),
-      /* @__PURE__ */ import_react3.default.createElement("path", { d: "M144.61 144.5c1.42-41.82 35.79-75.27 77.95-75.25 27.89.02 52.35 14.68 66.11 36.71 10.93-5.82 23.41-9.12 36.65-9.11 43.05.02 77.94 34.94 77.91 78 0 13.24-3.32 25.72-9.16 36.64 22.02 13.79 36.66 38.26 36.64 66.15-.02 42.16-33.52 76.48-75.34 77.86-1.42 41.82-35.78 75.28-77.94 75.25-27.89-.02-52.35-14.68-66.11-36.72-10.93 5.82-23.4 9.13-36.65 9.12-43.05-.02-77.94-34.94-77.91-78 0-13.24 3.32-25.72 9.16-36.64-22.02-13.79-36.65-38.26-36.64-66.15.02-42.16 33.51-76.48 75.33-77.86ZM297.77 71.99c-19.24-19.26-45.83-31.17-75.2-31.19-49.23-.03-90.67 33.39-102.84 78.79-45.41 12.12-78.87 53.52-78.9 102.76-.02 29.37 11.87 55.97 31.1 75.23-2.35 8.79-3.62 18.03-3.63 27.56-.03 58.77 47.58 106.44 106.35 106.47 9.53 0 18.77-1.25 27.55-3.6 19.24 19.26 45.84 31.18 75.21 31.2 49.24.03 90.67-33.39 102.84-78.8 45.42-12.11 78.88-53.51 78.91-102.75.02-29.37-11.87-55.98-31.11-75.24 2.35-8.78 3.62-18.02 3.63-27.55.03-58.77-47.58-106.44-106.35-106.47-9.53 0-18.77 1.25-27.56 3.59Z" })
-    ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "aryx-logo-shimmer" }));
-  }
+  // node_modules/lucide-react/dist/esm/icons/sliders-vertical.js
+  var __iconNode6 = [
+    ["path", { d: "M10 8h4", key: "1sr2af" }],
+    ["path", { d: "M12 21v-9", key: "17s77i" }],
+    ["path", { d: "M12 8V3", key: "13r4qs" }],
+    ["path", { d: "M17 16h4", key: "h1uq16" }],
+    ["path", { d: "M19 12V3", key: "o1uvq1" }],
+    ["path", { d: "M19 21v-5", key: "qua636" }],
+    ["path", { d: "M3 14h4", key: "bcjad9" }],
+    ["path", { d: "M5 10V3", key: "cb8scm" }],
+    ["path", { d: "M5 21v-7", key: "1w1uti" }]
+  ];
+  var SlidersVertical = createLucideIcon("sliders-vertical", __iconNode6);
 
-  // src/components/ThinkingDots/ThinkingDots.jsx
-  var import_react4 = __toESM(require_react());
-  function ThinkingDots() {
-    return /* @__PURE__ */ import_react4.default.createElement("div", { className: "thinking-dots" }, /* @__PURE__ */ import_react4.default.createElement("span", { className: "dot", style: { animationDelay: "0ms" } }), /* @__PURE__ */ import_react4.default.createElement("span", { className: "dot", style: { animationDelay: "150ms" } }), /* @__PURE__ */ import_react4.default.createElement("span", { className: "dot", style: { animationDelay: "300ms" } }));
+  // src/pages/SettingsPage/SettingsPage.jsx
+  function ToggleSwitch({ checked, onChange }) {
+    return /* @__PURE__ */ import_react3.default.createElement(
+      "div",
+      {
+        className: `toggle-switch ${checked ? "checked" : ""}`,
+        onClick: () => onChange(!checked)
+      },
+      /* @__PURE__ */ import_react3.default.createElement("div", { className: "toggle-thumb" })
+    );
   }
-
-  // src/pages/ChatPage/ChatPage.jsx
-  function ChatPage({
-    messages,
-    isLoadingReply,
-    listRef,
-    copiedMessageId,
-    handleCopyMessage,
-    input,
-    setInput,
-    textareaRef,
-    handleKeyDown,
-    handleSubmit
-  }) {
-    return /* @__PURE__ */ import_react5.default.createElement(import_react5.default.Fragment, null, isLoadingReply && /* @__PURE__ */ import_react5.default.createElement("div", { className: "loading-bar" }), /* @__PURE__ */ import_react5.default.createElement("div", { className: "chat-list", ref: listRef }, messages.length === 0 && /* @__PURE__ */ import_react5.default.createElement("div", { className: "empty" }, /* @__PURE__ */ import_react5.default.createElement(AryxLogo, { size: 56 })), messages.map((item) => /* @__PURE__ */ import_react5.default.createElement("div", { className: `message ${item.role}`, key: item.id }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "message-row" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "bubble" }, item.text)), (item.role === "user" || item.role === "assistant") && /* @__PURE__ */ import_react5.default.createElement("div", { className: "copy-row" }, /* @__PURE__ */ import_react5.default.createElement(
-      "button",
+  function SegmentControl({ options, selected, onChange }) {
+    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "segment-control" }, options.map((opt) => /* @__PURE__ */ import_react3.default.createElement(
+      "div",
       {
-        className: "copy-btn",
-        type: "button",
-        title: "Copy",
-        onClick: () => handleCopyMessage(item.id, item.text)
+        key: opt.value,
+        className: `segment-item ${opt.value === selected ? "selected" : ""}`,
+        onClick: () => onChange(opt.value)
       },
-      copiedMessageId === item.id ? /* @__PURE__ */ import_react5.default.createElement(Check, { size: 12 }) : /* @__PURE__ */ import_react5.default.createElement(Copy, { size: 12 })
-    )))), isLoadingReply && /* @__PURE__ */ import_react5.default.createElement("div", { className: "message assistant" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "bubble shimmer" }, /* @__PURE__ */ import_react5.default.createElement(ThinkingDots, null)))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "composer-container" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "chat-input-child" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "chat-input" }, /* @__PURE__ */ import_react5.default.createElement(
-      "textarea",
-      {
-        ref: textareaRef,
-        rows: "2",
-        placeholder: "Ask anything...",
-        value: input,
-        onChange: (e) => setInput(e.target.value),
-        onKeyDown: handleKeyDown
-      }
-    )), /* @__PURE__ */ import_react5.default.createElement("div", { className: "chat-input-actions" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "chat-input-actions-left" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "action-dot", title: "Attach" }, /* @__PURE__ */ import_react5.default.createElement("svg", { width: "20", height: "20", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", className: "icon-sm" }, /* @__PURE__ */ import_react5.default.createElement("path", { d: "M9.33496 16.5V10.665H3.5C3.13273 10.665 2.83496 10.3673 2.83496 10C2.83496 9.63273 3.13273 9.33496 3.5 9.33496H9.33496V3.5C9.33496 3.13273 9.63273 2.83496 10 2.83496C10.3673 2.83496 10.665 3.13273 10.665 3.5V9.33496H16.5L16.6338 9.34863C16.9369 9.41057 17.165 9.67857 17.165 10C17.165 10.3214 16.9369 10.5894 16.6338 10.6514L16.5 10.665H10.665V16.5C10.665 16.8673 10.3673 17.165 10 17.165C9.63273 17.165 9.33496 16.8673 9.33496 16.5Z", fill: "currentColor" }))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "action-dot", title: "Options" }, /* @__PURE__ */ import_react5.default.createElement("svg", { width: "10", height: "10", viewBox: "0 0 10 10", fill: "none", xmlns: "http://www.w3.org/2000/svg", className: "icon-2xs" }, /* @__PURE__ */ import_react5.default.createElement("g", null, /* @__PURE__ */ import_react5.default.createElement("path", { d: "M8.13037 3.71927L5.33252 5.20023V8.42289L7.89697 6.94242L7.94873 6.90775C8.06253 6.82002 8.13037 6.68363 8.13037 6.53763V3.71927ZM5.23389 1.52005C5.10743 1.44704 4.95515 1.43799 4.82227 1.49271L4.7666 1.52005L2.16309 3.0225L5.00488 4.62113L7.92383 3.07572L7.89697 3.05765L5.23389 1.52005ZM1.86963 6.53763C1.86963 6.70452 1.95852 6.85894 2.10303 6.94242L4.66748 8.4224V5.19437L1.86963 3.62015V6.53763ZM8.79541 6.53763C8.79541 6.91694 8.60593 7.26936 8.29346 7.47855L8.22949 7.5181L5.56641 9.0557C5.23795 9.24533 4.83786 9.2573 4.50049 9.09134L4.43408 9.0557L1.77051 7.5181C1.42032 7.31582 1.20459 6.94206 1.20459 6.53763V3.46244C1.20459 3.05801 1.42032 2.68425 1.77051 2.48197L4.43408 0.94437L4.50049 0.908726C4.83786 0.742764 5.23795 0.754738 5.56641 0.94437L8.22949 2.48197L8.29346 2.52152C8.60593 2.7307 8.79541 3.08313 8.79541 3.46244V6.53763Z", fill: "currentColor" }))))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "chat-input-actions-right" }, /* @__PURE__ */ import_react5.default.createElement(
-      "button",
-      {
-        className: "send-btn",
-        onClick: handleSubmit,
-        disabled: !input.trim() || isLoadingReply,
-        title: "Send"
-      },
-      /* @__PURE__ */ import_react5.default.createElement("svg", { width: "20", height: "20", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", className: "icon-sm text-token-dropdown-background" }, /* @__PURE__ */ import_react5.default.createElement("path", { d: "M9.33467 16.6663V4.93978L4.6374 9.63704L4.1667 9.16634L3.69599 8.69661L9.52998 2.86263L9.63447 2.77767C9.8925 2.60753 10.2433 2.63564 10.4704 2.86263L16.3034 8.69661L16.3884 8.80111C16.5588 9.05922 16.5306 9.40982 16.3034 9.63704C16.0762 9.86414 15.7255 9.89242 15.4675 9.722L15.363 9.63704L10.6647 4.9388V16.6663C10.6647 17.0336 10.367 17.3314 9.99971 17.3314C9.63259 17.3312 9.33467 17.0335 9.33467 16.6663ZM4.6374 9.63704C4.3777 9.89674 3.95569 9.89674 3.69599 9.63704C3.43657 9.37744 3.43668 8.95628 3.69599 8.69661L4.6374 9.63704Z", fill: "currentColor" }))
-    ))))));
+      opt.label
+    )));
   }
-
-  // src/App.jsx
-  var vscode = acquireVsCodeApi();
-  var DEFAULT_SETTINGS = {
-    provider: "google-gemini",
-    apiKey: "",
-    model: ""
-  };
-  function App() {
-    const [input, setInput] = (0, import_react6.useState)("");
-    const [messages, setMessages] = (0, import_react6.useState)([]);
-    const [settings, setSettings] = (0, import_react6.useState)(DEFAULT_SETTINGS);
-    const [models, setModels] = (0, import_react6.useState)([]);
-    const [isMenuOpen, setIsMenuOpen] = (0, import_react6.useState)(false);
-    const [isLoadingReply, setIsLoadingReply] = (0, import_react6.useState)(false);
-    const [isLoadingModels, setIsLoadingModels] = (0, import_react6.useState)(false);
-    const [copiedMessageId, setCopiedMessageId] = (0, import_react6.useState)(null);
-    const listRef = (0, import_react6.useRef)(null);
-    const textareaRef = (0, import_react6.useRef)(null);
-    const menuRef = (0, import_react6.useRef)(null);
-    (0, import_react6.useEffect)(() => {
-      vscode.postMessage({ type: "getSettings" });
-      function onMessage(event) {
-        const message = event.data;
-        if (message?.type === "settingsLoaded") {
-          setSettings({ ...DEFAULT_SETTINGS, ...message.settings || {} });
-        }
-        if (message?.type === "modelsLoaded") {
-          const next = Array.isArray(message.models) ? message.models : [];
-          setModels(next);
-          setIsLoadingModels(false);
-        }
-        if (message?.type === "assistantMessage") {
-          addMessage("assistant", message.text || "", "now");
-        }
-        if (message?.type === "errorMessage") {
-          addMessage("system", message.text || "Unknown error", "error");
-          setIsLoadingModels(false);
-        }
-        if (message?.type === "replyStart") {
-          setIsLoadingReply(true);
-        }
-        if (message?.type === "replyEnd") {
-          setIsLoadingReply(false);
-        }
-      }
-      window.addEventListener("message", onMessage);
-      return () => window.removeEventListener("message", onMessage);
-    }, []);
-    (0, import_react6.useEffect)(() => {
-      if (listRef.current) {
-        listRef.current.scrollTop = listRef.current.scrollHeight;
-      }
-    }, [messages, isLoadingReply]);
-    (0, import_react6.useEffect)(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-      }
-    }, [input]);
-    (0, import_react6.useEffect)(() => {
-      function handleClickOutside(event) {
-        if (menuRef.current && !menuRef.current.contains(event.target)) {
-          setIsMenuOpen(false);
-        }
-      }
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-    function addMessage(role, text, meta) {
-      const value = String(text || "").trim();
-      if (!value) return;
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + Math.floor(Math.random() * 1e3),
-          role,
-          text: value,
-          meta
-        }
-      ]);
-    }
-    function handleSubmit(event) {
-      if (event) event.preventDefault();
-      const text = input.trim();
-      if (!text || isLoadingReply) return;
-      if (!settings.apiKey || !settings.model) {
-        addMessage("system", "Open Settings tab and configure your API key + model first.", "note");
-        return;
-      }
-      addMessage("user", text, "you");
-      setInput("");
-      vscode.postMessage({
-        type: "sendMessage",
-        text,
-        settings
-      });
-    }
-    function handleNewChat() {
-      setMessages([]);
-      setInput("");
-    }
-    async function handleCopyMessage(messageId, text) {
-      try {
-        await navigator.clipboard.writeText(String(text || ""));
-        setCopiedMessageId(messageId);
-        setTimeout(() => {
-          setCopiedMessageId((current) => current === messageId ? null : current);
-        }, 1200);
-      } catch {
-        addMessage("system", "Copy failed.", "error");
-      }
-    }
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        handleSubmit();
-      }
-    };
-    const openSettingsTab = () => {
-      setIsMenuOpen(false);
-      vscode.postMessage({ type: "openSettings" });
-    };
-    const staticEmail = "login email id";
-    return /* @__PURE__ */ import_react6.default.createElement("div", { className: "app-shell" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "topbar" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "brand-small" }, "Tasks"), /* @__PURE__ */ import_react6.default.createElement("div", { className: "topbar-actions" }, /* @__PURE__ */ import_react6.default.createElement(
-      "button",
+  function SettingsApp() {
+    const [activeTab, setActiveTab] = (0, import_react3.useState)("general");
+    const [lang, setLang] = (0, import_react3.useState)("auto");
+    const [requireEnter, setRequireEnter] = (0, import_react3.useState)(true);
+    const [followBehavior, setFollowBehavior] = (0, import_react3.useState)("queue");
+    const [codeReview, setCodeReview] = (0, import_react3.useState)("inline");
+    const tabs = [
+      { id: "general", icon: /* @__PURE__ */ import_react3.default.createElement(Settings, { size: 16 }), label: "General" },
+      { id: "config", icon: /* @__PURE__ */ import_react3.default.createElement(SlidersVertical, { size: 16 }), label: "Configuration" },
+      { id: "personal", icon: /* @__PURE__ */ import_react3.default.createElement(Palette, { size: 16 }), label: "Personalization" },
+      { id: "mcp", icon: /* @__PURE__ */ import_react3.default.createElement(Server, { size: 16 }), label: "MCP servers" },
+      { id: "plugins", icon: /* @__PURE__ */ import_react3.default.createElement(Puzzle, { size: 16 }), label: "Plugins" }
+    ];
+    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "settings-container" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "settings-sidebar" }, tabs.map((tab) => /* @__PURE__ */ import_react3.default.createElement(
+      "div",
       {
-        className: "icon-btn",
-        type: "button",
-        title: "History",
-        onClick: () => addMessage("system", "History is not available yet.", "note")
+        key: tab.id,
+        className: `nav-item ${activeTab === tab.id ? "active" : ""}`,
+        onClick: () => setActiveTab(tab.id)
       },
-      /* @__PURE__ */ import_react6.default.createElement("svg", { width: "21", height: "21", viewBox: "0 0 21 21", fill: "none", xmlns: "http://www.w3.org/2000/svg", className: "icon-xs hover:opacity-80" }, /* @__PURE__ */ import_react6.default.createElement("path", { d: "M17.1348 10.5455C17.1348 7.04681 14.2986 4.21057 10.7998 4.21057C8.59509 4.21063 6.65256 5.33708 5.5176 7.04749H7.34963C7.7169 7.04749 8.01467 7.34525 8.01467 7.71252C8.01447 8.07963 7.71678 8.37756 7.34963 8.37756H4.09963C3.73265 8.37737 3.43479 8.07951 3.43459 7.71252V4.46252C3.43459 4.09537 3.73253 3.79768 4.09963 3.79749C4.4669 3.79749 4.76467 4.09526 4.76467 4.46252V5.81995C6.16735 4.03097 8.34882 2.88054 10.7998 2.88049C15.0331 2.88049 18.4649 6.31227 18.4649 10.5455C18.4649 14.7788 15.0331 18.2106 10.7998 18.2106C7.32665 18.2105 4.39432 15.9006 3.45217 12.735C3.34762 12.3831 3.54851 12.0126 3.90041 11.9078C4.25233 11.8033 4.62283 12.0042 4.72756 12.3561C5.50658 14.9731 7.93122 16.8804 10.7998 16.8805C14.2986 16.8805 17.1348 14.0443 17.1348 10.5455ZM10.1348 7.54553C10.1348 7.17832 10.4326 6.88058 10.7998 6.88049C11.1671 6.88049 11.4649 7.17826 11.4649 7.54553V10.5455C11.4649 10.7219 11.3952 10.8915 11.2705 11.0162L9.27053 13.0162C9.01096 13.2757 8.58981 13.2755 8.3301 13.0162C8.0704 12.7565 8.0704 12.3345 8.3301 12.0748L10.1348 10.2701V7.54553Z", fill: "currentColor" }))
-    ), /* @__PURE__ */ import_react6.default.createElement("div", { className: "menu-container", ref: menuRef }, /* @__PURE__ */ import_react6.default.createElement(
-      "button",
+      /* @__PURE__ */ import_react3.default.createElement("span", { className: "nav-icon" }, tab.icon),
+      /* @__PURE__ */ import_react3.default.createElement("span", { className: "nav-label" }, tab.label)
+    ))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "settings-content" }, activeTab === "general" && /* @__PURE__ */ import_react3.default.createElement("div", { className: "tab-pane" }, /* @__PURE__ */ import_react3.default.createElement("h2", { className: "pane-title" }, "General"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "settings-card" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-row" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-info" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-name" }, "Language"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-desc" }, "Language for the app UI")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-action" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "dropdown-trigger" }, /* @__PURE__ */ import_react3.default.createElement("span", null, "Auto Detect"), /* @__PURE__ */ import_react3.default.createElement(ChevronDown, { size: 14 })))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "divider" }), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-row" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-info" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-name" }, "Require ^ Enter to send long prompts"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-desc" }, "When enabled, multiline prompts require ^ + enter to send.")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-action" }, /* @__PURE__ */ import_react3.default.createElement(ToggleSwitch, { checked: requireEnter, onChange: setRequireEnter }))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "divider" }), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-row" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-info" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-name" }, "Follow-up behavior"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-desc" }, "Queue follow-ups while Aryx runs or steer the current run. Press Ctrl+Shift+Enter to do the opposite for one message.")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-action" }, /* @__PURE__ */ import_react3.default.createElement(
+      SegmentControl,
       {
-        className: "icon-btn",
-        type: "button",
-        title: "Settings",
-        onClick: () => setIsMenuOpen(!isMenuOpen)
-      },
-      /* @__PURE__ */ import_react6.default.createElement("svg", { width: "20", height: "20", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", className: "icon-xs" }, /* @__PURE__ */ import_react6.default.createElement("path", { fillRule: "evenodd", clipRule: "evenodd", d: "M9.99944 7.24939C11.5169 7.2495 12.7473 8.47995 12.7475 9.99744C12.7475 11.5151 11.517 12.7454 9.99944 12.7455C8.48176 12.7455 7.2514 11.5151 7.2514 9.99744C7.25155 8.47988 8.48186 7.24939 9.99944 7.24939ZM9.99944 8.57947C9.2164 8.57947 8.58163 9.21442 8.58148 9.99744C8.58148 10.7806 9.2163 11.4154 9.99944 11.4154C10.7825 11.4153 11.4174 10.7805 11.4174 9.99744C11.4173 9.21449 10.7824 8.57958 9.99944 8.57947Z", fill: "currentColor" }), /* @__PURE__ */ import_react6.default.createElement("path", { fillRule: "evenodd", clipRule: "evenodd", d: "M10.6391 1.67517C11.2939 1.67532 11.8991 2.02577 12.226 2.59314L13.2485 4.36755H15.2963C15.9505 4.36758 16.555 4.71709 16.8823 5.28357L17.5219 6.39001C17.8489 6.95668 17.8481 7.65542 17.5209 8.22205L16.4975 9.99451L17.5239 11.7689C17.8519 12.3357 17.8521 13.0347 17.5248 13.6019L16.8862 14.7084C16.559 15.2747 15.9543 15.6243 15.3002 15.6244H13.2514L12.2299 17.3988C11.9029 17.9663 11.297 18.3168 10.642 18.3168L9.3637 18.3158C8.71064 18.3155 8.10718 17.9678 7.77972 17.4027L6.74847 15.6234L4.69964 15.6244C4.04558 15.6242 3.44087 15.2747 3.1137 14.7084L2.47503 13.6019C2.14791 13.0349 2.14836 12.3366 2.47601 11.7699L3.50237 9.99548L2.47894 8.22205C2.15175 7.65533 2.15174 6.95673 2.47894 6.39001L3.11761 5.28259C3.44458 4.71663 4.04894 4.36813 4.70257 4.36755L6.75042 4.36658L7.77581 2.59119C8.10301 2.02476 8.7076 1.67527 9.36175 1.67517H10.6391ZM9.36273 3.00623C9.1835 3.00623 9.01679 3.10199 8.92718 3.2572L7.82659 5.16345C7.63652 5.49253 7.28473 5.69529 6.90472 5.69568L4.70355 5.69763C4.52451 5.69782 4.3585 5.79355 4.26898 5.94861L3.6303 7.05505C3.54091 7.2102 3.54077 7.40192 3.6303 7.55701L4.73089 9.46326C4.92108 9.7929 4.92135 10.1992 4.73089 10.5287L3.62737 12.4359C3.5378 12.591 3.53792 12.7817 3.62737 12.9369L4.26605 14.0433C4.35567 14.1982 4.52067 14.2932 4.69964 14.2933L6.90276 14.2943C7.28242 14.2946 7.63335 14.497 7.82366 14.8256L8.93011 16.7357C9.01984 16.8905 9.18578 16.9857 9.36468 16.9857H10.642C10.8213 16.9857 10.987 16.89 11.0766 16.7347L12.1752 14.8275C12.3653 14.4975 12.7182 14.2943 13.0991 14.2943H15.3002C15.4794 14.2942 15.6452 14.1985 15.7348 14.0433L16.3725 12.9379C16.4621 12.7826 16.4621 12.5911 16.3725 12.4359L15.27 10.5287C15.1032 10.2404 15.0808 9.89331 15.2055 9.59021L15.269 9.46326L16.3696 7.55701C16.4591 7.40189 16.459 7.21022 16.3696 7.05505L15.7309 5.94861C15.6412 5.79363 15.4754 5.69863 15.2963 5.69861L13.0951 5.69763L12.9535 5.68884C12.6751 5.65158 12.4217 5.50519 12.2504 5.28259L12.1723 5.16443L11.0737 3.2572C10.9841 3.10175 10.8175 3.00525 10.6381 3.00525L9.36273 3.00623Z", fill: "currentColor" }))
-    ), isMenuOpen && /* @__PURE__ */ import_react6.default.createElement("div", { className: "dropdown-menu" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "dropdown-item static-item" }, staticEmail), /* @__PURE__ */ import_react6.default.createElement("div", { className: "dropdown-item static-item" }, /* @__PURE__ */ import_react6.default.createElement(ExternalLink, { size: 14 }), "Upgrade to higher limits"), /* @__PURE__ */ import_react6.default.createElement("div", { className: "dropdown-divider" }), /* @__PURE__ */ import_react6.default.createElement("div", { className: "dropdown-item clickable", onClick: openSettingsTab }, /* @__PURE__ */ import_react6.default.createElement(Settings, { size: 14 }), "Aryx settings"), /* @__PURE__ */ import_react6.default.createElement("div", { className: "dropdown-item clickable" }, /* @__PURE__ */ import_react6.default.createElement(LogOut, { size: 14 }), "Logout"))), /* @__PURE__ */ import_react6.default.createElement(
-      "button",
-      {
-        className: "icon-btn",
-        type: "button",
-        title: "New Chat",
-        onClick: handleNewChat
-      },
-      /* @__PURE__ */ import_react6.default.createElement("svg", { width: "20", height: "20", viewBox: "0 0 20 20", fill: "none", xmlns: "http://www.w3.org/2000/svg", className: "icon-xs" }, /* @__PURE__ */ import_react6.default.createElement("path", { d: "M2.6687 11.333V8.66699C2.6687 7.74455 2.66841 7.01205 2.71655 6.42285C2.76533 5.82612 2.86699 5.31731 3.10425 4.85156L3.25854 4.57617C3.64272 3.94975 4.19392 3.43995 4.85229 3.10449L5.02905 3.02149C5.44666 2.84233 5.90133 2.75849 6.42358 2.71582C7.01272 2.66769 7.74445 2.66797 8.66675 2.66797H9.16675C9.53393 2.66797 9.83165 2.96586 9.83179 3.33301C9.83179 3.70028 9.53402 3.99805 9.16675 3.99805H8.66675C7.7226 3.99805 7.05438 3.99834 6.53198 4.04102C6.14611 4.07254 5.87277 4.12568 5.65601 4.20313L5.45581 4.28906C5.01645 4.51293 4.64872 4.85345 4.39233 5.27149L4.28979 5.45508C4.16388 5.7022 4.08381 6.01663 4.04175 6.53125C3.99906 7.05373 3.99878 7.7226 3.99878 8.66699V11.333C3.99878 12.2774 3.99906 12.9463 4.04175 13.4688C4.08381 13.9833 4.16389 14.2978 4.28979 14.5449L4.39233 14.7285C4.64871 15.1465 5.01648 15.4871 5.45581 15.7109L5.65601 15.7969C5.87276 15.8743 6.14614 15.9265 6.53198 15.958C7.05439 16.0007 7.72256 16.002 8.66675 16.002H11.3337C12.2779 16.002 12.9461 16.0007 13.4685 15.958C13.9829 15.916 14.2976 15.8367 14.5447 15.7109L14.7292 15.6074C15.147 15.3511 15.4879 14.9841 15.7117 14.5449L15.7976 14.3447C15.8751 14.128 15.9272 13.8546 15.9587 13.4688C16.0014 12.9463 16.0017 12.2774 16.0017 11.333V10.833C16.0018 10.466 16.2997 10.1681 16.6667 10.168C17.0339 10.168 17.3316 10.4659 17.3318 10.833V11.333C17.3318 12.2555 17.3331 12.9879 17.2849 13.5771C17.2422 14.0993 17.1584 14.5541 16.9792 14.9717L16.8962 15.1484C16.5609 15.8066 16.0507 16.3571 15.4246 16.7412L15.1492 16.8955C14.6833 17.1329 14.1739 17.2354 13.5769 17.2842C12.9878 17.3323 12.256 17.332 11.3337 17.332H8.66675C7.74446 17.332 7.01271 17.3323 6.42358 17.2842C5.90135 17.2415 5.44665 17.1577 5.02905 16.9785L4.85229 16.8955C4.19396 16.5601 3.64271 16.0502 3.25854 15.4238L3.10425 15.1484C2.86697 14.6827 2.76534 14.1739 2.71655 13.5771C2.66841 12.9879 2.6687 12.2555 2.6687 11.333ZM13.4646 3.11328C14.4201 2.334 15.8288 2.38969 16.7195 3.28027L16.8865 3.46485C17.6141 4.35685 17.6143 5.64423 16.8865 6.53613L16.7195 6.7207L11.6726 11.7686C11.1373 12.3039 10.4624 12.6746 9.72827 12.8408L9.41089 12.8994L7.59351 13.1582C7.38637 13.1877 7.17701 13.1187 7.02905 12.9707C6.88112 12.8227 6.81199 12.6134 6.84155 12.4063L7.10132 10.5898L7.15991 10.2715C7.3262 9.53749 7.69692 8.86241 8.23218 8.32715L13.2791 3.28027L13.4646 3.11328ZM15.7791 4.2207C15.3753 3.81702 14.7366 3.79124 14.3035 4.14453L14.2195 4.2207L9.17261 9.26856C8.81541 9.62578 8.56774 10.0756 8.45679 10.5654L8.41772 10.7773L8.28296 11.7158L9.22241 11.582L9.43433 11.543C9.92426 11.432 10.3749 11.1844 10.7322 10.8271L15.7791 5.78027L15.8552 5.69629C16.185 5.29194 16.1852 4.708 15.8552 4.30371L15.7791 4.2207Z", fill: "currentColor" }))
-    ))), /* @__PURE__ */ import_react6.default.createElement(
-      ChatPage,
-      {
-        messages,
-        isLoadingReply,
-        listRef,
-        copiedMessageId,
-        handleCopyMessage,
-        input,
-        setInput,
-        textareaRef,
-        handleKeyDown,
-        handleSubmit
+        options: [{ label: "Queue", value: "queue" }, { label: "Steer", value: "steer" }],
+        selected: followBehavior,
+        onChange: setFollowBehavior
       }
-    ));
+    ))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "divider" }), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-row", style: { borderBottom: "none" } }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-info" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-name" }, "Code review"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-desc" }, "Start a review in the current thread when possible or launch a separate review thread")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "setting-action" }, /* @__PURE__ */ import_react3.default.createElement(
+      SegmentControl,
+      {
+        options: [{ label: "Inline", value: "inline" }, { label: "Detached", value: "detached" }],
+        selected: codeReview,
+        onChange: setCodeReview
+      }
+    )))))));
   }
   var rootElement = document.getElementById("root");
   if (rootElement) {
-    (0, import_client.createRoot)(rootElement).render(/* @__PURE__ */ import_react6.default.createElement(App, null));
+    (0, import_client.createRoot)(rootElement).render(/* @__PURE__ */ import_react3.default.createElement(SettingsApp, null));
   }
 })();
 /*! Bundled license information:
@@ -21872,11 +21725,12 @@ lucide-react/dist/esm/shared/src/utils.js:
 lucide-react/dist/esm/defaultAttributes.js:
 lucide-react/dist/esm/Icon.js:
 lucide-react/dist/esm/createLucideIcon.js:
-lucide-react/dist/esm/icons/check.js:
-lucide-react/dist/esm/icons/copy.js:
-lucide-react/dist/esm/icons/external-link.js:
-lucide-react/dist/esm/icons/log-out.js:
+lucide-react/dist/esm/icons/chevron-down.js:
+lucide-react/dist/esm/icons/palette.js:
+lucide-react/dist/esm/icons/puzzle.js:
+lucide-react/dist/esm/icons/server.js:
 lucide-react/dist/esm/icons/settings.js:
+lucide-react/dist/esm/icons/sliders-vertical.js:
 lucide-react/dist/esm/lucide-react.js:
   (**
    * @license lucide-react v0.552.0 - ISC

@@ -1,326 +1,385 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 :root {
-  --primary-color: #161618;
-  --secondary-color: #1f2122;
-  --select-modal-color: #3e3f42;
-  --select-modal-hover-color: #4d4e51;
-  --chat-background-color: #242628;
-  --chat-edit-cancle-color: #353739;
-  --key-color: #2e3032;
-  --hover-color: #28282a;
-  --hover-icon-change-color: #39393a;
-  --popup-hover-color: #4d4e51;
-  --accent-color: #11b5d2;
-  --soft-accent-color: rgb(17, 181, 210, 0.2);
-  --light-color: #f1f1f1;
-  --soft-light-color: #e0e0e0;
-  --light-chat-color: #d1d1d1;
-  --text-color: #b5b5b5;
-  --input-color: #1a1b1e;
-  --code-block-color: #1c1d21;
-  --overlay-color: rgba(5, 5, 5, 0.5);
-  --border-color: rgba(252, 252, 252, 0.12);
-  --error-color: #ff7575;
-  --success-color: #75dc90;
-  --warning-color: #f6c36a;
-  --border-radius-mini: 10px;
-  --border-radius: 12px;
-  --border-radius-trigger: 13px;
-  --border-radius-chat: 16px;
-  --border-radius-medium: 18px;
-  --border-radius-big: 24px;
+  /* Surfaces */
+  --ax-bg: var(--vscode-sideBar-background);
+  --ax-bg-editor: var(--vscode-editor-background);
+  --ax-bg-input: var(--vscode-input-background);
+  --ax-bg-hover: var(--vscode-list-hoverBackground, rgba(255, 255, 255, 0.05));
+  --ax-bg-active: var(--vscode-list-activeSelectionBackground, rgba(255, 255, 255, 0.1));
+  --ax-bg-dropdown: var(--vscode-dropdown-background);
+  --ax-bg-code: var(--vscode-textCodeBlock-background);
+
+  /* Borders */
+  --ax-border: var(--vscode-panel-border, rgba(128, 128, 128, .2));
+  --ax-border-input: var(--vscode-input-border, rgba(128, 128, 128, .2));
+  --ax-border-focus: var(--vscode-focusBorder);
+
+  /* Text */
+  --ax-fg: var(--vscode-foreground);
+  --ax-fg-secondary: var(--vscode-descriptionForeground, #8b8b8b);
+  --ax-fg-placeholder: var(--vscode-input-placeholderForeground);
+  --ax-fg-link: var(--vscode-textLink-foreground);
+  --ax-fg-error: var(--vscode-errorForeground);
+  --ax-fg-badge: var(--vscode-badge-foreground);
+
+  /* Interactive / Buttons */
+  --ax-accent: var(--vscode-button-background, #007acc);
+  --ax-accent-fg: var(--vscode-button-foreground, #ffffff);
+  --ax-btn-bg: var(--vscode-button-background);
+  --ax-btn-fg: var(--vscode-button-foreground);
+  --ax-btn-hover: var(--vscode-button-hoverBackground);
+  --ax-btn2-bg: var(--vscode-button-secondaryBackground);
+  --ax-btn2-fg: var(--vscode-button-secondaryForeground);
+  --ax-btn2-hover: var(--vscode-button-secondaryHoverBackground);
+  --ax-toolbar-hover: var(--vscode-toolbar-hoverBackground);
+  --ax-badge-bg: var(--vscode-badge-background);
+
+  /* Scrollbar */
+  --ax-scroll-thumb: var(--vscode-scrollbarSlider-background);
+  --ax-scroll-hover: var(--vscode-scrollbarSlider-hoverBackground);
+  --ax-scroll-active: var(--vscode-scrollbarSlider-activeBackground);
+
+  /* Progress / accent */
+  --ax-progress: var(--vscode-progressBar-background);
+
+  /* Radii */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-pill: 9999px;
+
+  /* Sizing */
+  --toolbar-h: 36px;
+  --composer-btn: 28px;
+  --composer-btn-r: 8px;
+  --toolbar-px: 10px;
+
+  /* Font */
+  --ax-font: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  --ax-font-mono: var(--vscode-editor-font-family, "Menlo", "Consolas", "Liberation Mono", monospace);
+  --ax-font-size: var(--vscode-font-size, 13px);
 }
 
-* {
+/* ── Reset ──────────────────────────────────────── */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-family: inherit;
+  font-size: inherit;
 }
 
+/* ── Document ───────────────────────────────────── */
+html,
 body {
   width: 100%;
-  height: 100vh;
-  color: var(--light-color);
-  background-color: var(--primary-color);
-  font-family: 'Inter', sans-serif;
+  height: 100%;
   overflow: hidden;
 }
 
-.app-shell {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+body {
+  color: var(--ax-fg);
+  background: var(--ax-bg);
+  font-family: var(--ax-font);
+  font-size: var(--ax-font-size);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar */
-*::-webkit-scrollbar {
-  width: 6px;
+#root {
+  width: 100%;
+  height: 100%;
 }
+
+/* ── Scrollbars (Aryx ultra-thin) ──────────────── */
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
 *::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: transparent;
   border-radius: 3px;
+  transition: background .15s;
 }
 
-/* Topbar */
-.topbar {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  background-color: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
-  z-index: 10;
+*:hover::-webkit-scrollbar-thumb {
+  background: var(--ax-scroll-thumb);
 }
 
-.brand {
-  font-size: 14px;
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ax-scroll-hover);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: var(--ax-scroll-active);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+*:hover {
+  scrollbar-color: var(--ax-scroll-thumb) transparent;
+}
+
+/* ── Selection ──────────────────────────────────── */
+::selection {
+  background: var(--ax-bg-active);
+  color: var(--ax-fg);
+}
+
+
+
+/* ══════════════════════════════════════════════════
+  background-repeat: no-repeat;
+  background-size: 220% 100%;
+  animation: aryx-shimmer 2.2s cubic-bezier(.4, 0, .2, 1) infinite;
+  /* Use blossom as mask */
+  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20500%20500%22%20fill%3D%22black%22%3E%3Cpath%20d%3D%22M330.34%20313.62h-67.84c-7.65%200-13.85-6.2-13.85-13.85s6.2-13.85%2013.85-13.85h67.84c7.65%200%2013.85%206.2%2013.85%2013.85s-6.2%2013.85-13.85%2013.85Z%22/%3E%3Cpath%20d%3D%22M169.65%20313.38c-2.36%200-4.74-.6-6.93-1.87-6.62-3.83-8.88-12.31-5.05-18.93l23.78-41.08-23.91-43.21c-3.7-6.69-1.28-15.12%205.41-18.82%206.69-3.71%2015.12-1.28%2018.82%205.41l31.51%2056.94-31.64%2054.65c-2.57%204.43-7.22%206.91-12%206.91Z%22/%3E%3Cpath%20d%3D%22M144.61%20144.5c1.42-41.82%2035.79-75.27%2077.95-75.25%2027.89.02%2052.35%2014.68%2066.11%2036.71%2010.93-5.82%2023.41-9.12%2036.65-9.11%2043.05.02%2077.94%2034.94%2077.91%2078%200%2013.24-3.32%2025.72-9.16%2036.64%2022.02%2013.79%2036.66%2038.26%2036.64%2066.15-.02%2042.16-33.52%2076.48-75.34%2077.86-1.42%2041.82-35.78%2075.28-77.94%2075.25-27.89-.02-52.35-14.68-66.11-36.72-10.93%205.82-23.4%209.13-36.65%209.12-43.05-.02-77.94-34.94-77.91-78%200-13.24%203.32-25.72%209.16-36.64-22.02-13.79-36.65-38.26-36.64-66.15.02-42.16%2033.51-76.48%2075.33-77.86ZM297.77%2071.99c-19.24-19.26-45.83-31.17-75.2-31.19-49.23-.03-90.67%2033.39-102.84%2078.79-45.41%2012.12-78.87%2053.52-78.9%20102.76-.02%2029.37%2011.87%2055.97%2031.1%2075.23-2.35%208.79-3.62%2018.03-3.63%2027.56-.03%2058.77%2047.58%20106.44%20106.35%20106.47%209.53%200%2018.77-1.25%2027.55-3.6%2019.24%2019.26%2045.84%2031.18%2075.21%2031.2%2049.24.03%2090.67-33.39%20102.84-78.8%2045.42-12.11%2078.88-53.51%2078.91-102.75.02-29.37-11.87-55.98-31.11-75.24%202.35-8.78%203.62-18.02%203.63-27.55.03-58.77-47.58-106.44-106.35-106.47-9.53%200-18.77%201.25-27.56%203.59Z%22/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20500%20500%22%20fill%3D%22black%22%3E%3Cpath%20d%3D%22M330.34%20313.62h-67.84c-7.65%200-13.85-6.2-13.85-13.85s6.2-13.85%2013.85-13.85h67.84c7.65%200%2013.85%206.2%2013.85%2013.85s-6.2%2013.85-13.85%2013.85Z%22/%3E%3Cpath%20d%3D%22M169.65%20313.38c-2.36%200-4.74-.6-6.93-1.87-6.62-3.83-8.88-12.31-5.05-18.93l23.78-41.08-23.91-43.21c-3.7-6.69-1.28-15.12%205.41-18.82%206.69-3.71%2015.12-1.28%2018.82%205.41l31.51%2056.94-31.64%2054.65c-2.57%204.43-7.22%206.91-12%206.91Z%22/%3E%3Cpath%20d%3D%22M144.61%20144.5c1.42-41.82%2035.79-75.27%2077.95-75.25%2027.89.02%2052.35%2014.68%2066.11%2036.71%2010.93-5.82%2023.41-9.12%2036.65-9.11%2043.05.02%2077.94%2034.94%2077.91%2078%200%2013.24-3.32%2025.72-9.16%2036.64%2022.02%2013.79%2036.66%2038.26%2036.64%2066.15-.02%2042.16-33.52%2076.48-75.34%2077.86-1.42%2041.82-35.78%2075.28-77.94%2075.25-27.89-.02-52.35-14.68-66.11-36.72-10.93%205.82-23.4%209.13-36.65%209.12-43.05-.02-77.94-34.94-77.91-78%200-13.24%203.32-25.72%209.16-36.64-22.02-13.79-36.65-38.26-36.64-66.15.02-42.16%2033.51-76.48%2075.33-77.86ZM297.77%2071.99c-19.24-19.26-45.83-31.17-75.2-31.19-49.23-.03-90.67%2033.39-102.84%2078.79-45.41%2012.12-78.87%2053.52-78.9%20102.76-.02%2029.37%2011.87%2055.97%2031.1%2075.23-2.35%208.79-3.62%2018.03-3.63%2027.56-.03%2058.77%2047.58%20106.44%20106.35%20106.47%209.53%200%2018.77-1.25%2027.55-3.6%2019.24%2019.26%2045.84%2031.18%2075.21%2031.2%2049.24.03%2090.67-33.39%20102.84-78.8%2045.42-12.11%2078.88-53.51%2078.91-102.75.02-29.37-11.87-55.98-31.11-75.24%202.35-8.78%203.62-18.02%203.63-27.55.03-58.77-47.58-106.44-106.35-106.47-9.53%200-18.77%201.25-27.56%203.59Z%22/%3E%3C/svg%3E");
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════
+   LOADING BAR — Aryx top-edge progress
+   ══════════════════════════════════════════════════ */
+.loading-bar {
+  height: 2px;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.loading-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -40%;
+  bottom: 0;
+  width: 28%;
+  background: var(--ax-progress);
+  animation: loading-slide 1.2s linear infinite;
+}
+
+@keyframes loading-slide {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   MARKDOWN IN MESSAGES — Rich text styling
+   ══════════════════════════════════════════════════ */
+.bubble h1,
+.bubble h2,
+.bubble h3 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: var(--ax-fg);
   font-weight: 600;
-  letter-spacing: 1px;
 }
 
-.icon-btn {
-  background: none;
-  border: none;
-  color: var(--text-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.bubble h1 {
+  font-size: 16px;
 }
 
-/* Settings Panel */
-.settings-panel {
-  padding: 16px;
-  background-color: var(--secondary-color);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.bubble h2 {
+  font-size: 14px;
 }
 
-.field-label {
-  font-size: 11px;
-  color: var(--text-color);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.settings-panel input,
-.settings-panel select {
-  width: 100%;
-  height: 36px;
-  background-color: var(--chat-background-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-mini);
-  color: var(--light-color);
-  padding: 0 12px;
+.bubble h3 {
   font-size: 13px;
 }
 
-.settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.text-btn {
-  background-color: var(--accent-color);
-  color: #000;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Chat List */
-.chat-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.empty {
-  color: var(--text-color);
-  text-align: center;
-  margin-top: 40px;
-  font-size: 14px;
-}
-
-/* Message Styles - Matching Vasuu UI */
-.message {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.message.user {
-  align-items: flex-end;
-}
-
-.message.assistant {
-  align-items: flex-start;
-}
-
-.message.user .bubble {
-  max-width: 85%;
-  background-color: var(--chat-background-color);
-  color: var(--light-color);
-  padding: 10px 16px;
-  border-radius: var(--border-radius-chat);
-  font-size: 15px;
-  line-height: 1.5;
-  letter-spacing: 0.3px;
-  border: 1px solid var(--border-color);
-}
-
-.message.assistant .bubble {
-  max-width: 100%;
-  color: var(--light-chat-color);
-  font-size: 15px;
+.bubble p {
+  margin-bottom: 6px;
   line-height: 1.6;
-  letter-spacing: 0.3px;
 }
 
-.meta {
-  font-size: 11px;
-  color: var(--text-color);
-  margin-top: 2px;
+.bubble ul,
+.bubble ol {
+  margin-left: 18px;
+  margin-bottom: 6px;
 }
 
-.composer-container {
-  padding: 10px 15px 20px;
-  background-color: var(--primary-color);
-  position: relative;
+.bubble li {
+  margin-bottom: 2px;
 }
 
-.chat-input-child {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--chat-background-color);
-  border-radius: var(--border-radius-medium);
-  border: 1px solid var(--border-color);
-  padding: 5px;
-}
-
-.chat-input {
-  width: 100%;
-}
-
-.chat-input textarea {
-  width: 100%;
-  max-height: 200px;
-  min-height: 40px;
-  background: transparent;
-  border: none;
-  color: var(--light-color);
+.bubble code {
+  background: var(--ax-bg-code);
+  padding: 1px 5px;
+  border-radius: 4px;
   font-size: 12px;
-  padding: 4px 8px;
-  padding-top: 0px;
-  margin-top: 8px;
-  resize: none;
-  outline: none;
-  letter-spacing: 0.2px;
+  font-family: var(--ax-font-mono);
 }
 
-.chat-input textarea::placeholder {
-  color: #6a6a6a;
+.bubble pre {
+  background: var(--ax-bg-code);
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  overflow-x: auto;
+  margin: 8px 0;
+  border: 1px solid var(--ax-border);
 }
 
-.chat-input-actions {
+.bubble pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 12px;
+}
+
+.bubble a {
+  color: var(--ax-fg-link);
+  text-decoration: none;
+}
+
+.bubble a:hover {
+  text-decoration: underline;
+}
+
+.bubble blockquote {
+  border-left: 3px solid var(--ax-border);
+  padding-left: 10px;
+  color: var(--ax-fg-secondary);
+  font-style: italic;
+  margin: 6px 0;
+}
+
+.bubble table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.bubble th,
+.bubble td {
+  border: 1px solid var(--ax-border);
+  padding: 5px 8px;
+  text-align: left;
+}
+
+.bubble th {
+  background: var(--ax-bg-code);
+  font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════════
+   SETTINGS DROPDOWN MENU
+   ══════════════════════════════════════════════════ */
+.menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--ax-bg-dropdown);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--r-lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  z-index: 100;
+  animation: shadcn-in 0.15s ease-out;
+  overflow: hidden;
+  padding: 4px;
+}
+
+@keyframes shadcn-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  width: auto;
+  height: 25px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: start;
+  gap: 7px;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 10px;
+  color: var(--ax-fg);
+  user-select: none;
 }
 
-.chat-input-actions-left {
-  display: flex;
-  gap: 3px;
-  padding-left: 3px;
+.dropdown-item.static-item {
+  color: var(--ax-fg-secondary);
 }
 
-.action-dot {
-  width: 24px;
-  height: 24px;
-  border-radius: 9px;
-  background-color: var(--chat-background-color);
-  color: var(--text-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.dropdown-item.clickable {
   cursor: pointer;
+  transition: background-color 0.1s ease;
 }
 
-.action-dot:hover {
-  color: var(--light-color);
-  background-color: #393939;
+.dropdown-item.clickable:hover {
+  background-color: var(--ax-toolbar-hover);
 }
 
-.chat-input-actions-right {
-  padding-right: 1px;
+.dropdown-divider {
+  height: 1px;
+  background-color: #535353;
+  margin: 4px 6px;
 }
 
-.send-btn {
-  width: 27px;
-  height: 27px;
-  border-radius: 10px;
-  background-color: var(--light-color);
-  border: none;
-  color: var(--primary-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
+/* ══════════════════════════════════════════════════
+   REDUCED MOTION — respect user preference
+   ══════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
 
-.send-btn:disabled {
-  background-color: var(--secondary-color);
-  color: var(--text-color);
-  cursor: not-allowed;
-  opacity: 0.5;
-}
+  .aryx-logo-container,
+  .aryx-logo-shimmer,
+  .shimmer::after,
+  .thinking-dots .dot,
+  .loading-bar::after,
+  .empty,
+  .message,
+  .settings-panel {
+    animation: none !important;
+  }
 
-/* Shimmer/Thinking Effect */
-.shimmer {
-  color: var(--text-color);
-  font-size: 14px;
-  font-weight: 500;
-  background: linear-gradient(90deg, var(--text-color) 0%, var(--light-color) 50%, var(--text-color) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 1.5s linear infinite;
-}
+  .aryx-logo-container {
+    opacity: 1;
+  }
 
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  .empty {
+    opacity: 1;
+  }
 }
-
-/* Markdown Support Styles from Vasuu UI */
-.bubble h1, .bubble h2, .bubble h3 { margin-top: 12px; margin-bottom: 8px; color: var(--light-color); }
-.bubble p { margin-bottom: 8px; line-height: 1.6; }
-.bubble ul, .bubble ol { margin-left: 20px; margin-bottom: 8px; }
-.bubble li { margin-bottom: 4px; }
-.bubble code { background-color: var(--code-block-color); padding: 2px 4px; border-radius: 4px;}
-.bubble pre { background-color: var(--code-block-color); padding: 12px; border-radius: 8px; overflow-x: auto; margin: 10px 0; }
-.bubble pre code { background-color: transparent; padding: 0; }
-.bubble a { color: var(--accent-color); text-decoration: underline; }
-.bubble blockquote { border-left: 4px solid var(--border-color); padding-left: 12px; color: var(--text-color); font-style: italic; }
-.bubble table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-.bubble th, .bubble td { border: 1px solid var(--border-color); padding: 8px; text-align: left; }
