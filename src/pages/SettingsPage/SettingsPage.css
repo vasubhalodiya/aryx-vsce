@@ -19,9 +19,8 @@ body {
 
 .settings-container {
   display: flex;
-  height: 100vh;
-  width: 100vw;
   box-sizing: border-box;
+  margin-top: 50px;
 }
 
 .settings-sidebar {
@@ -38,7 +37,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0px 8px;
-  border-radius: var(--r-lg, 12px);
+  border-radius: var(--r-lg, 11px);
   cursor: pointer;
   margin-bottom: 4px;
   color: var(--ax-fg-secondary);
@@ -52,9 +51,8 @@ body {
 }
 
 .nav-item.active {
-  background-color: var(--ax-bg-active);
+  background-color: var(--ax-bg-hover);
   color: var(--vscode-fg);
-  font-weight: 500;
 }
 
 .nav-icon {
@@ -90,7 +88,7 @@ body {
 .settings-card {
   background-color: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--ax-border);
-  border-radius: 8px;
+  border-radius: var(--r-xl, 20px);
   overflow: hidden;
 }
 
