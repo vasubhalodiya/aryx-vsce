@@ -29,12 +29,16 @@ class AryxChatViewProvider {
   constructor(context) {
     this.context = context;
     this.extensionUri = context.extensionUri;
+    this._sidebarView = null;
+    this._settingsPanel = null;
   }
 
   /**
    * @param {vscode.WebviewView} webviewView
    */
   resolveWebviewView(webviewView) {
+    this._sidebarView = webviewView;
+
     webviewView.webview.options = {
       enableScripts: true,
       localResourceRoots: [this.extensionUri]
@@ -159,6 +163,11 @@ class AryxChatViewProvider {
   _openSettingsTab() {
     if (this._settingsPanel) {
       this._settingsPanel.reveal(vscode.ViewColumn.One);
+      // Re-send settings so AI tab always shows current values
+      this._settingsPanel.webview.postMessage({
+        type: 'settingsLoaded',
+        settings: this._getSettings()
+      });
       return;
     }
 
@@ -212,8 +221,9 @@ class AryxChatViewProvider {
         if (message?.type === 'saveSettings') {
           const nextSettings = normalizeSettings(message.settings);
           await this.context.globalState.update('aryx.settings', nextSettings);
-          webview.postMessage({ type: 'settingsLoaded', settings: nextSettings });
           webview.postMessage({ type: 'settingsSaved' });
+          // Immediately push updated settings to sidebar so next message uses new provider/key/model
+          this._sidebarView?.webview.postMessage({ type: 'settingsLoaded', settings: nextSettings });
           return;
         }
 

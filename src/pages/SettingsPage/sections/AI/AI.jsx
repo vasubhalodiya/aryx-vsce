@@ -114,10 +114,11 @@ export default function AI({ vscode }) {
   function handleProviderChange(id) {
     setProvider(id);
     setShowProviderDropdown(false);
+    setApiKey('');
     setModel('');
     setModels([]);
     setModelSearch('');
-    saveSettings(id, apiKey, '');
+    saveSettings(id, '', '');
   }
 
   function handleApiKeyChange(e) {
