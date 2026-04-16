@@ -3,6 +3,7 @@ const vscode = require('vscode');
 const VIEW_ID = 'aryxChatView';
 const COMMAND_FOCUS = 'aryxChat.focus';
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
+const OPENROUTER_API_BASE = 'https://openrouter.ai/api/v1';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -66,12 +67,12 @@ class AryxChatViewProvider {
           if (!settings.apiKey) {
             webviewView.webview.postMessage({
               type: 'errorMessage',
-              text: 'Please enter Gemini API key first.'
+              text: 'Please enter an API key first.'
             });
             return;
           }
 
-          const models = await fetchGeminiModels(settings.apiKey);
+          const models = await fetchModels(settings.provider, settings.apiKey);
           webviewView.webview.postMessage({ type: 'modelsLoaded', models });
 
           if (!settings.model && models.length > 0) {
@@ -93,7 +94,7 @@ class AryxChatViewProvider {
           if (!settings.apiKey || !settings.model) {
             webviewView.webview.postMessage({
               type: 'errorMessage',
-              text: 'Set Gemini API key and model in settings.'
+              text: 'Set API key and model in settings.'
             });
             return;
           }
@@ -101,11 +102,7 @@ class AryxChatViewProvider {
           await this.context.globalState.update('aryx.settings', settings);
           webviewView.webview.postMessage({ type: 'replyStart' });
 
-          const reply = await generateGeminiReply({
-            apiKey: settings.apiKey,
-            model: settings.model,
-            text
-          });
+          const reply = await generateReply(settings, text);
 
           webviewView.webview.postMessage({ type: 'assistantMessage', text: reply });
           webviewView.webview.postMessage({ type: 'replyEnd' });
@@ -192,7 +189,7 @@ class AryxChatViewProvider {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
+      content="default-src 'none'; connect-src https://generativelanguage.googleapis.com https://openrouter.ai; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
     />
     <link rel="stylesheet" href="${settingsCssUri}?v=${nonce}" />
     <title>Aryx Settings</title>
@@ -202,6 +199,45 @@ class AryxChatViewProvider {
     <script nonce="${nonce}" src="${appScriptUri}"></script>
   </body>
 </html>`;
+
+    // Wire up settings panel message handling
+    webview.onDidReceiveMessage(async (message) => {
+      try {
+        if (message?.type === 'getSettings') {
+          const settings = this._getSettings();
+          webview.postMessage({ type: 'settingsLoaded', settings });
+          return;
+        }
+
+        if (message?.type === 'saveSettings') {
+          const nextSettings = normalizeSettings(message.settings);
+          await this.context.globalState.update('aryx.settings', nextSettings);
+          webview.postMessage({ type: 'settingsLoaded', settings: nextSettings });
+          webview.postMessage({ type: 'settingsSaved' });
+          return;
+        }
+
+        if (message?.type === 'fetchModels') {
+          const settings = normalizeSettings(message.settings);
+          if (!settings.apiKey) {
+            webview.postMessage({
+              type: 'errorMessage',
+              text: 'Please enter an API key first.'
+            });
+            return;
+          }
+
+          const models = await fetchModels(settings.provider, settings.apiKey);
+          webview.postMessage({ type: 'modelsLoaded', models });
+          return;
+        }
+      } catch (error) {
+        webview.postMessage({
+          type: 'errorMessage',
+          text: toUserError(error)
+        });
+      }
+    }, null, this.context.subscriptions);
 
     this._settingsPanel.onDidDispose(
       () => {
@@ -213,8 +249,10 @@ class AryxChatViewProvider {
   }
 }
 
+// ─── Settings normalization ───────────────────────────
 function normalizeSettings(value) {
-  const provider = value?.provider === 'google-gemini' ? 'google-gemini' : 'google-gemini';
+  const validProviders = ['google-gemini', 'openrouter'];
+  const provider = validProviders.includes(value?.provider) ? value.provider : 'google-gemini';
   return {
     provider,
     apiKey: typeof value?.apiKey === 'string' ? value.apiKey.trim() : '',
@@ -222,6 +260,15 @@ function normalizeSettings(value) {
   };
 }
 
+// ─── Fetch models (provider-agnostic) ─────────────────
+async function fetchModels(provider, apiKey) {
+  if (provider === 'openrouter') {
+    return fetchOpenRouterModels(apiKey);
+  }
+  return fetchGeminiModels(apiKey);
+}
+
+// ─── Google Gemini models ─────────────────────────────
 async function fetchGeminiModels(apiKey) {
   const url = `${GEMINI_API_BASE}/models?key=${encodeURIComponent(apiKey)}`;
   const response = await fetch(url);
@@ -248,9 +295,44 @@ async function fetchGeminiModels(apiKey) {
   return [...new Set(modelNames)];
 }
 
-async function generateGeminiReply({ apiKey, model, text }) {
-  const modelId = model.replace(/^models\//, '');
-  const url = `${GEMINI_API_BASE}/models/${encodeURIComponent(modelId)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+// ─── OpenRouter models ────────────────────────────────
+async function fetchOpenRouterModels(apiKey) {
+  const url = `${OPENROUTER_API_BASE}/models`;
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const bodyText = await safeReadText(response);
+    throw new Error(`OpenRouter models fetch failed (${response.status}): ${bodyText}`);
+  }
+
+  const data = await response.json();
+  const items = Array.isArray(data?.data) ? data.data : [];
+
+  const modelIds = items
+    .map((item) => String(item?.id || ''))
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+
+  return [...new Set(modelIds)];
+}
+
+// ─── Generate reply (provider-agnostic) ───────────────
+async function generateReply(settings, text) {
+  if (settings.provider === 'openrouter') {
+    return generateOpenRouterReply(settings, text);
+  }
+  return generateGeminiReply(settings, text);
+}
+
+// ─── Google Gemini reply ──────────────────────────────
+async function generateGeminiReply(settings, text) {
+  const modelId = settings.model.replace(/^models\//, '');
+  const url = `${GEMINI_API_BASE}/models/${encodeURIComponent(modelId)}:generateContent?key=${encodeURIComponent(settings.apiKey)}`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -285,6 +367,45 @@ async function generateGeminiReply({ apiKey, model, text }) {
   return reply;
 }
 
+// ─── OpenRouter reply ─────────────────────────────────
+async function generateOpenRouterReply(settings, text) {
+  const url = `${OPENROUTER_API_BASE}/chat/completions`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${settings.apiKey}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': 'https://aryx.dev',
+      'X-Title': 'Aryx VS Code Extension'
+    },
+    body: JSON.stringify({
+      model: settings.model,
+      messages: [
+        {
+          role: 'user',
+          content: text
+        }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    const bodyText = await safeReadText(response);
+    throw new Error(`OpenRouter response failed (${response.status}): ${bodyText}`);
+  }
+
+  const data = await response.json();
+  const reply = data?.choices?.[0]?.message?.content;
+
+  if (!reply || typeof reply !== 'string' || !reply.trim()) {
+    throw new Error('OpenRouter returned empty response. Try another prompt/model.');
+  }
+
+  return reply.trim();
+}
+
+// ─── Utilities ────────────────────────────────────────
 async function safeReadText(response) {
   try {
     return await response.text();
