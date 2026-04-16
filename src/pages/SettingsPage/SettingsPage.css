@@ -24,7 +24,8 @@ body {
 }
 
 .settings-sidebar {
-  width: 140px;
+  min-width: 140px;
+  width: auto;
   overflow-y: auto;
   box-sizing: border-box;
   margin-top: 40px;
@@ -37,7 +38,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0px 8px;
-  border-radius: var(--r-lg, 11px);
+  border-radius: var(--r-md, 10px);
   cursor: pointer;
   margin-bottom: 4px;
   color: var(--ax-fg-secondary);

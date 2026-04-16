@@ -18,8 +18,7 @@ export default function ChatPage({
 }) {
   return (
     <>
-      {/* ── Aryx-style loading bar ─────────────── */}
-      {isLoadingReply && <div className="loading-bar" />}
+
 
       {/* ── Message Thread ──────────────────────── */}
       <div className="chat-list" ref={listRef}>

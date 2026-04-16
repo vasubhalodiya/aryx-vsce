@@ -162,37 +162,7 @@ body {
   pointer-events: none;
 }
 
-/* ══════════════════════════════════════════════════
-   LOADING BAR — Aryx top-edge progress
-   ══════════════════════════════════════════════════ */
-.loading-bar {
-  height: 2px;
-  position: relative;
-  overflow: hidden;
-  background: transparent;
-  flex-shrink: 0;
-}
 
-.loading-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -40%;
-  bottom: 0;
-  width: 28%;
-  background: var(--ax-progress);
-  animation: loading-slide 1.2s linear infinite;
-}
-
-@keyframes loading-slide {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(350%);
-  }
-}
 
 /* ══════════════════════════════════════════════════
    MARKDOWN IN MESSAGES — Rich text styling
@@ -328,14 +298,14 @@ body {
 
 .dropdown-item {
   width: auto;
-  height: 25px;
+  height: 27px;
   display: flex;
   align-items: center;
   justify-content: start;
   gap: 7px;
   border-radius: 8px;
-  padding: 8px;
-  font-size: 10px;
+  padding: 0px 8px;
+  font-size: 12px;
   color: var(--ax-fg);
   user-select: none;
 }
@@ -368,7 +338,7 @@ body {
   .aryx-logo-shimmer,
   .shimmer::after,
   .thinking-dots .dot,
-  .loading-bar::after,
+
   .empty,
   .message,
   .settings-panel {
