@@ -134,10 +134,10 @@ class AryxChatViewProvider {
   _getHtml(webview) {
     const nonce = getNonce();
     const appScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, 'media', 'main.js')
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'main.js')
     );
-    const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, 'media', 'styles.css')
+    const mainCssUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'main.css')
     );
 
     return `<!DOCTYPE html>
@@ -149,8 +149,7 @@ class AryxChatViewProvider {
       http-equiv="Content-Security-Policy"
       content="default-src 'none'; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
     />
-    <link rel="stylesheet" href="${styleUri}?v=${nonce}" />
-    <link rel="stylesheet" href="${webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'media', 'main.css'))}?v=${nonce}" />
+    <link rel="stylesheet" href="${mainCssUri}?v=${nonce}" />
     <title>Aryx</title>
   </head>
   <body>
@@ -180,13 +179,10 @@ class AryxChatViewProvider {
     const nonce = getNonce();
 
     const appScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, 'media', 'settings.js')
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'settings.js')
     );
-    const baseStyleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, 'media', 'styles.css')
-    );
-    const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, 'media', 'settings.css')
+    const settingsCssUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.extensionUri, 'dist', 'settings.css')
     );
 
     webview.html = `<!DOCTYPE html>
@@ -198,8 +194,7 @@ class AryxChatViewProvider {
       http-equiv="Content-Security-Policy"
       content="default-src 'none'; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
     />
-    <link rel="stylesheet" href="${baseStyleUri}?v=${nonce}" />
-    <link rel="stylesheet" href="${styleUri}?v=${nonce}" />
+    <link rel="stylesheet" href="${settingsCssUri}?v=${nonce}" />
     <title>Aryx Settings</title>
   </head>
   <body>

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import ChatPage from './pages/ChatPage/ChatPage';
 import { Settings, ExternalLink, LogOut } from 'lucide-react';
+import './styles/variables.css';
 import './App.css';
 
 const vscode = acquireVsCodeApi();

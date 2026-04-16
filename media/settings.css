@@ -1,3 +1,267 @@
+/* src/styles/variables.css */
+:root {
+  --ax-bg: var(--vscode-sideBar-background);
+  --ax-bg-editor: var(--vscode-editor-background);
+  --ax-bg-input: var(--vscode-input-background);
+  --ax-bg-hover: var(--vscode-list-hoverBackground, rgba(255, 255, 255, 0.05));
+  --ax-bg-active: var(--vscode-list-activeSelectionBackground, rgba(255, 255, 255, 0.1));
+  --ax-bg-dropdown: var(--vscode-dropdown-background);
+  --ax-bg-code: var(--vscode-textCodeBlock-background);
+  --ax-border: var(--vscode-panel-border, rgba(128, 128, 128, .2));
+  --ax-border-input: var(--vscode-input-border, rgba(128, 128, 128, .2));
+  --ax-border-focus: var(--vscode-focusBorder);
+  --ax-fg: var(--vscode-foreground);
+  --ax-fg-secondary: var(--vscode-descriptionForeground, #8b8b8b);
+  --ax-fg-placeholder: var(--vscode-input-placeholderForeground);
+  --ax-fg-link: var(--vscode-textLink-foreground);
+  --ax-fg-error: var(--vscode-errorForeground);
+  --ax-fg-badge: var(--vscode-badge-foreground);
+  --ax-accent: var(--vscode-button-background, #007acc);
+  --ax-accent-fg: var(--vscode-button-foreground, #ffffff);
+  --ax-btn-bg: var(--vscode-button-background);
+  --ax-btn-fg: var(--vscode-button-foreground);
+  --ax-btn-hover: var(--vscode-button-hoverBackground);
+  --ax-btn2-bg: var(--vscode-button-secondaryBackground);
+  --ax-btn2-fg: var(--vscode-button-secondaryForeground);
+  --ax-btn2-hover: var(--vscode-button-secondaryHoverBackground);
+  --ax-toolbar-hover: var(--vscode-toolbar-hoverBackground);
+  --ax-badge-bg: var(--vscode-badge-background);
+  --ax-scroll-thumb: var(--vscode-scrollbarSlider-background);
+  --ax-scroll-hover: var(--vscode-scrollbarSlider-hoverBackground);
+  --ax-scroll-active: var(--vscode-scrollbarSlider-activeBackground);
+  --ax-progress: var(--vscode-progressBar-background);
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-pill: 9999px;
+  --toolbar-h: 36px;
+  --composer-btn: 28px;
+  --composer-btn-r: 8px;
+  --toolbar-px: 10px;
+  --ax-font: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+  --ax-font-mono: var(--vscode-editor-font-family, "Menlo", "Consolas", "Liberation Mono", monospace);
+  --ax-font-size: var(--vscode-font-size, 13px);
+}
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  color: var(--ax-fg);
+  background: var(--ax-bg);
+  font-family: var(--ax-font);
+  font-size: var(--ax-font-size);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#root {
+  width: 100%;
+  height: 100%;
+}
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background .15s;
+}
+*:hover::-webkit-scrollbar-thumb {
+  background: var(--ax-scroll-thumb);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ax-scroll-hover);
+}
+*::-webkit-scrollbar-thumb:active {
+  background: var(--ax-scroll-active);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+*:hover {
+  scrollbar-color: var(--ax-scroll-thumb) transparent;
+}
+::selection {
+  background: var(--ax-bg-active);
+  color: var(--ax-fg);
+}
+.bubble h1,
+.bubble h2,
+.bubble h3 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: var(--ax-fg);
+  font-weight: 600;
+}
+.bubble h1 {
+  font-size: 16px;
+}
+.bubble h2 {
+  font-size: 14px;
+}
+.bubble h3 {
+  font-size: 13px;
+}
+.bubble p {
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+.bubble ul,
+.bubble ol {
+  margin-left: 18px;
+  margin-bottom: 6px;
+}
+.bubble li {
+  margin-bottom: 2px;
+}
+.bubble code {
+  background: var(--ax-bg-code);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--ax-font-mono);
+}
+.bubble pre {
+  background: var(--ax-bg-code);
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  overflow-x: auto;
+  margin: 8px 0;
+  border: 1px solid var(--ax-border);
+}
+.bubble pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 12px;
+}
+.bubble a {
+  color: var(--ax-fg-link);
+  text-decoration: none;
+}
+.bubble a:hover {
+  text-decoration: underline;
+}
+.bubble blockquote {
+  border-left: 3px solid var(--ax-border);
+  padding-left: 10px;
+  color: var(--ax-fg-secondary);
+  font-style: italic;
+  margin: 6px 0;
+}
+.bubble table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 12px;
+}
+.bubble th,
+.bubble td {
+  border: 1px solid var(--ax-border);
+  padding: 5px 8px;
+  text-align: left;
+}
+.bubble th {
+  background: var(--ax-bg-code);
+  font-weight: 600;
+}
+.menu-container {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--ax-bg-dropdown);
+  border: 1px solid var(--ax-border);
+  border-radius: var(--r-lg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  z-index: 100;
+  animation: shadcn-in 0.15s ease-out;
+  overflow: hidden;
+  padding: 4px;
+}
+@keyframes shadcn-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.dropdown-item {
+  width: auto;
+  height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 7px;
+  border-radius: 8px;
+  padding: 0px 8px;
+  font-size: 12px;
+  color: var(--ax-fg);
+  user-select: none;
+}
+.dropdown-item.static-item {
+  color: var(--ax-fg-secondary);
+}
+.dropdown-item.clickable {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+.dropdown-item.clickable:hover {
+  background-color: var(--ax-toolbar-hover);
+}
+.dropdown-divider {
+  height: 1px;
+  background-color: #535353;
+  margin: 4px 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aryx-logo-container,
+  .aryx-logo-shimmer,
+  .shimmer::after,
+  .thinking-dots .dot,
+  .empty,
+  .message,
+  .settings-panel {
+    animation: none !important;
+  }
+  .aryx-logo-container {
+    opacity: 1;
+  }
+  .empty {
+    opacity: 1;
+  }
+}
+
 /* src/pages/SettingsPage/SettingsPage.css */
 :root {
   --vscode-bg: var(--vscode-editor-background, #1e1e1e);

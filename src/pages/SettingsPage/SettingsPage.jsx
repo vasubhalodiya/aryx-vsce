@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Settings, Sliders, Palette, Server, Puzzle, ChevronDown } from 'lucide-react';
+import '../../styles/variables.css';
 import './SettingsPage.css';
 
 function ToggleSwitch({ checked, onChange }) {
