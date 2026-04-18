@@ -8,7 +8,7 @@
   padding: 20px 14px 12px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 5px;
 }
 
 /* ── Empty State — Aryx blossom + fade ─────────── */
@@ -148,7 +148,7 @@
 .copy-row {
   width: 100%;
   display: flex;
-  margin-top: 4px;
+  margin-top: 2px;
   opacity: 0;
   pointer-events: none;
   transition: opacity .12s ease;
@@ -168,11 +168,11 @@
 }
 
 .copy-btn {
-  width: 22px;
-  height: 22px;
+  width: 19px;
+  height: 19px;
   border: none;
   color: var(--ax-fg) !important;
-  border-radius: 7px;
+  border-radius: 6px;
   background: none;
   display: flex;
   align-items: center;
