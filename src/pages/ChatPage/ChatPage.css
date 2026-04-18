@@ -33,7 +33,7 @@
 @keyframes empty-fade {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(4px);
   }
 
   to {
