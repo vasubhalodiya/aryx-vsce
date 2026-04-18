@@ -4,6 +4,7 @@ const VIEW_ID = 'aryxChatView';
 const COMMAND_FOCUS = 'aryxChat.focus';
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const OPENROUTER_API_BASE = 'https://openrouter.ai/api/v1';
+const OPENAI_API_BASE = 'https://api.openai.com/v1';
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -198,7 +199,7 @@ class AryxChatViewProvider {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; connect-src https://generativelanguage.googleapis.com https://openrouter.ai; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
+      content="default-src 'none'; connect-src https://generativelanguage.googleapis.com https://openrouter.ai https://api.openai.com; img-src ${webview.cspSource}; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';"
     />
     <link rel="stylesheet" href="${settingsCssUri}?v=${nonce}" />
     <title>Aryx Settings</title>
@@ -261,7 +262,7 @@ class AryxChatViewProvider {
 
 // ─── Settings normalization ───────────────────────────
 function normalizeSettings(value) {
-  const validProviders = ['google-gemini', 'openrouter'];
+  const validProviders = ['google-gemini', 'openrouter', 'openai'];
   const provider = validProviders.includes(value?.provider) ? value.provider : 'google-gemini';
   return {
     provider,
@@ -272,9 +273,8 @@ function normalizeSettings(value) {
 
 // ─── Fetch models (provider-agnostic) ─────────────────
 async function fetchModels(provider, apiKey) {
-  if (provider === 'openrouter') {
-    return fetchOpenRouterModels(apiKey);
-  }
+  if (provider === 'openrouter') return fetchOpenRouterModels(apiKey);
+  if (provider === 'openai') return fetchOpenAIModels(apiKey);
   return fetchGeminiModels(apiKey);
 }
 
@@ -284,7 +284,7 @@ async function fetchGeminiModels(apiKey) {
   const response = await fetch(url);
   if (!response.ok) {
     const bodyText = await safeReadText(response);
-    throw new Error(`Gemini models fetch failed (${response.status}): ${bodyText}`);
+    throw new Error(parseApiError(response.status, bodyText));
   }
 
   const data = await response.json();
@@ -317,7 +317,7 @@ async function fetchOpenRouterModels(apiKey) {
 
   if (!response.ok) {
     const bodyText = await safeReadText(response);
-    throw new Error(`OpenRouter models fetch failed (${response.status}): ${bodyText}`);
+    throw new Error(parseApiError(response.status, bodyText));
   }
 
   const data = await response.json();
@@ -331,11 +331,29 @@ async function fetchOpenRouterModels(apiKey) {
   return [...new Set(modelIds)];
 }
 
+// ─── OpenAI models ────────────────────────────────────
+async function fetchOpenAIModels(apiKey) {
+  const url = `${OPENAI_API_BASE}/models`;
+  const response = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${apiKey}` }
+  });
+  if (!response.ok) {
+    const bodyText = await safeReadText(response);
+    throw new Error(parseApiError(response.status, bodyText));
+  }
+  const data = await response.json();
+  const items = Array.isArray(data?.data) ? data.data : [];
+  const modelIds = items
+    .map((item) => String(item?.id || ''))
+    .filter((id) => id.startsWith('gpt'))
+    .sort((a, b) => a.localeCompare(b));
+  return [...new Set(modelIds)];
+}
+
 // ─── Generate reply (provider-agnostic) ───────────────
 async function generateReply(settings, text) {
-  if (settings.provider === 'openrouter') {
-    return generateOpenRouterReply(settings, text);
-  }
+  if (settings.provider === 'openrouter') return generateOpenRouterReply(settings, text);
+  if (settings.provider === 'openai') return generateOpenAIReply(settings, text);
   return generateGeminiReply(settings, text);
 }
 
@@ -361,7 +379,7 @@ async function generateGeminiReply(settings, text) {
 
   if (!response.ok) {
     const bodyText = await safeReadText(response);
-    throw new Error(`Gemini response failed (${response.status}): ${bodyText}`);
+    throw new Error(parseApiError(response.status, bodyText));
   }
 
   const data = await response.json();
@@ -402,7 +420,7 @@ async function generateOpenRouterReply(settings, text) {
 
   if (!response.ok) {
     const bodyText = await safeReadText(response);
-    throw new Error(`OpenRouter response failed (${response.status}): ${bodyText}`);
+    throw new Error(parseApiError(response.status, bodyText));
   }
 
   const data = await response.json();
@@ -415,12 +433,53 @@ async function generateOpenRouterReply(settings, text) {
   return reply.trim();
 }
 
+// ─── OpenAI reply ─────────────────────────────────────
+async function generateOpenAIReply(settings, text) {
+  const url = `${OPENAI_API_BASE}/chat/completions`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${settings.apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: settings.model,
+      messages: [{ role: 'user', content: text }]
+    })
+  });
+  if (!response.ok) {
+    const bodyText = await safeReadText(response);
+    throw new Error(parseApiError(response.status, bodyText));
+  }
+  const data = await response.json();
+  const reply = data?.choices?.[0]?.message?.content;
+  if (!reply || typeof reply !== 'string' || !reply.trim()) {
+    throw new Error('OpenAI returned empty response. Try another prompt/model.');
+  }
+  return reply.trim();
+}
+
 // ─── Utilities ────────────────────────────────────────
 async function safeReadText(response) {
   try {
     return await response.text();
   } catch {
     return 'Unable to read error body';
+  }
+}
+
+function parseApiError(status, bodyText) {
+  try {
+    const data = JSON.parse(bodyText);
+    const msg =
+      data?.error?.message ||
+      data?.message ||
+      (typeof data?.error === 'string' ? data.error : null) ||
+      bodyText;
+    return `${status}\n${String(msg).trim()}`;
+  } catch {
+    const trimmed = (bodyText || '').trim();
+    return trimmed ? `${status}\n${trimmed}` : `${status}\nRequest failed`;
   }
 }
 

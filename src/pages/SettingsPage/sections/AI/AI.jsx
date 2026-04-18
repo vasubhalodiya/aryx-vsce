@@ -4,7 +4,8 @@ import './AI.css';
 
 const PROVIDERS = [
   { id: 'google-gemini', label: 'Google Gemini' },
-  { id: 'openrouter', label: 'OpenRouter' }
+  { id: 'openrouter', label: 'OpenRouter' },
+  { id: 'openai', label: 'OpenAI' }
 ];
 
 export default function AI({ vscode }) {
@@ -190,6 +191,8 @@ export default function AI({ vscode }) {
             <div className="setting-desc">
               {provider === 'google-gemini'
                 ? 'Your Google AI Studio API key'
+                : provider === 'openai'
+                ? 'Your OpenAI API key'
                 : 'Your OpenRouter API key'}
             </div>
           </div>
