@@ -1,26 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
+import Icon from '@/components/Icon/Icon';
+import unifiedSvg from '@/assets/icons/diff-unified.svg';
+import splitSvg from '@/assets/icons/diff-split.svg';
 import './General.css';
 
-const UnifiedIcon = () => (
-  <svg width="98" height="89" viewBox="0 0 98 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3.5" y="3.5" width="91" height="82" rx="16.5" stroke="white" strokeWidth="7" />
-    <rect x="14" y="14" width="70" height="28" rx="6" fill="#B84A59" />
-    <rect x="14" y="48" width="70" height="27" rx="6" fill="#436AA1" />
-  </svg>
-);
-
-const SplitIcon = () => (
-  <svg width="98" height="89" viewBox="0 0 98 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3.5" y="3.5" width="91" height="82" rx="16.5" stroke="white" stroke-width="7" />
-    <rect x="52" y="14" width="32" height="61" rx="6" fill="#436AA1" />
-    <rect x="14" y="14" width="32" height="61" rx="6" fill="#B84A59" />
-  </svg>
-);
-
 const DIFF_OPTIONS = [
-  { value: 'unified', label: 'Unified', icon: <UnifiedIcon /> },
-  { value: 'split', label: 'Split', icon: <SplitIcon /> }
+  { value: 'unified', label: 'Unified', icon: <Icon svg={unifiedSvg}  /> },
+  { value: 'split', label: 'Split', icon: <Icon svg={splitSvg} /> }
 ];
 
 export default function General() {

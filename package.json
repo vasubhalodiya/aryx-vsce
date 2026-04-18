@@ -13,8 +13,8 @@
   "activationEvents": [],
   "main": "./extension.js",
   "scripts": {
-    "build:webview": ".\\node_modules\\@esbuild\\win32-x64\\esbuild.exe src/App.jsx --bundle --minify --format=iife --platform=browser --target=es2020 --define:process.env.NODE_ENV='\"production\"' --outfile=dist/main.js",
-    "build:settings": ".\\node_modules\\@esbuild\\win32-x64\\esbuild.exe src/pages/SettingsPage/SettingsPage.jsx --bundle --minify --format=iife --platform=browser --target=es2020 --define:process.env.NODE_ENV='\"production\"' --outfile=dist/settings.js",
+    "build:webview": ".\\node_modules\\@esbuild\\win32-x64\\esbuild.exe src/App.jsx --bundle --minify --format=iife --platform=browser --target=es2020 --loader:.svg=text --alias:@=./src --define:process.env.NODE_ENV='\"production\"' --outfile=dist/main.js",
+    "build:settings": ".\\node_modules\\@esbuild\\win32-x64\\esbuild.exe src/pages/SettingsPage/SettingsPage.jsx --bundle --minify --format=iife --platform=browser --target=es2020 --loader:.svg=text --alias:@=./src --define:process.env.NODE_ENV='\"production\"' --outfile=dist/settings.js",
     "build": "npm run build:webview && npm run build:settings"
   },
   "contributes": {
