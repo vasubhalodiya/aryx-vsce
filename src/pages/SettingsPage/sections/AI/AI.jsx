@@ -147,7 +147,7 @@ export default function AI({ vscode }) {
 
   return (
     <div className="tab-pane">
-      <h2 className="pane-title">AI</h2>
+      <h2 className="pane-title">API Integration</h2>
 
       <div className="settings-card">
         {/* Provider Row */}

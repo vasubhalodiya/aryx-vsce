@@ -7,6 +7,12 @@
   animation: logo-enter 250ms ease-out 60ms forwards;
 }
 
+.aryx-logo-container svg {
+  width: 60px;
+  height: 60px;
+  opacity: 0.8;
+}
+
 @keyframes logo-enter {
   from {
     opacity: 0;

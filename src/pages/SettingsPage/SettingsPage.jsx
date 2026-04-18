@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Settings, Sliders, Palette, Server, Puzzle, Cpu } from 'lucide-react';
+import { Settings, Cpu } from 'lucide-react';
 import General from './sections/General/General';
 import AI from './sections/AI/AI';
 import '../../styles/variables.css';
@@ -13,7 +13,7 @@ function SettingsApp() {
 
   const tabs = [
     { id: 'general', icon: <Settings size={16} />, label: 'General' },
-    { id: 'ai', icon: <Cpu size={16} />, label: 'AI' },
+    { id: 'ai', icon: <Cpu size={16} />, label: 'API Integration' },
     // { id: 'config', icon: <Sliders size={16} />, label: 'Configuration' },
     // { id: 'personal', icon: <Palette size={16} />, label: 'Personalization' },
     // { id: 'mcp', icon: <Server size={16} />, label: 'MCP servers' },
