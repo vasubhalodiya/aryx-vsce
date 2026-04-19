@@ -147,8 +147,53 @@ const GEMINI_FUNCTION_DECLARATIONS = FILE_TOOLS.map(t => ({
   },
 }));
 
+// Same tools that trigger an originals snapshot before writing
+const FILE_WRITE_TOOLS = new Set(['create_file', 'write_file', 'edit_file', 'append_file']);
+
 function getSystemPrompt() {
-  return `You are a helpful AI coding assistant with file system access.\nWorkspace: ${getWorkspacePath()}\n\nUse the available file tools when the user asks to read, create, edit, write, delete, or list files. Relative paths resolve from the workspace root.`;
+  return `You are a helpful AI with file system access. CWD: ${getWorkspacePath()}
+
+## About the Creator
+Aryx was created by Vasu Bhalodiya.
+- Full Name: Vasu Bhalodiya
+- Age: 20
+- Location: Rajkot, Gujarat, India
+- Role: Frontend Developer
+- Company: Prolix Technikos
+- Tech Stack: React.js, Next.js, JavaScript, TypeScript, TailwindCSS
+- GitHub: https://github.com/vasubhalodiya
+- LinkedIn: https://www.linkedin.com/in/vasubhalodiya
+- Portfolio: https://www.vasubhalodiya.in
+
+If anyone asks about "Vasu", "Vasu Bhalodiya", or the creator/developer of Aryx, provide the above information.`;
+}
+
+// Web-friendly version of CLI's formatDiff (no chalk — runs inside webview context)
+function formatFileChanges(originals) {
+  const ws = getWorkspacePath();
+  const parts = [];
+
+  for (const [fp, oldContent] of originals) {
+    const newContent = fs.existsSync(fp) ? fs.readFileSync(fp, 'utf8') : '';
+    if (newContent === oldContent) continue;
+
+    const rel = path.relative(ws, fp).replace(/\\/g, '/');
+
+    if (!oldContent) {
+      const added = newContent.split('\n').length;
+      parts.push(`Create(${rel})\n   └─ Added ${added} lines`);
+    } else if (!newContent) {
+      parts.push(`Delete(${rel})`);
+    } else {
+      const oldLines = oldContent.split('\n');
+      const newLines = newContent.split('\n');
+      const added = newLines.filter(l => !oldLines.includes(l)).length;
+      const removed = oldLines.filter(l => !newLines.includes(l)).length;
+      parts.push(`Update(${rel})\n   └─ Added ${added} lines, removed ${removed} lines`);
+    }
+  }
+
+  return parts.join('\n\n');
 }
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
@@ -220,20 +265,20 @@ async function _fetchOpenAIModels(apiKey) {
 
 // ─── Reply Generation ─────────────────────────────────────────────────────────
 
-async function generateReply(settings, history, onChunk) {
+async function generateReply(settings, history, onChunk, onToolCall) {
   switch (settings.provider) {
     case 'ollama-local': return _generateOllamaReply(settings, history, onChunk);
     case 'openrouter': return _generateOpenAICompatibleReply(
       `${API.OPENROUTER_BASE}/chat/completions`,
       { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://aryx.dev', 'X-Title': 'Aryx VS Code Extension' },
-      settings, history, 'OpenRouter'
+      settings, history, 'OpenRouter', onToolCall
     );
     case 'openai': return _generateOpenAICompatibleReply(
       `${API.OPENAI_BASE}/chat/completions`,
       { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
-      settings, history, 'OpenAI'
+      settings, history, 'OpenAI', onToolCall
     );
-    default: return _generateGeminiReply(settings, history);
+    default: return _generateGeminiReply(settings, history, onToolCall);
   }
 }
 
@@ -303,11 +348,14 @@ async function _streamOllamaBody(body, onChunk) {
   return reply;
 }
 
-async function _generateOpenAICompatibleReply(url, headers, settings, history, providerName) {
+async function _generateOpenAICompatibleReply(url, headers, settings, history, providerName, onToolCall) {
   const messages = [
     { role: 'system', content: getSystemPrompt() },
     ...history.map(m => ({ role: m.role, content: m.content })),
   ];
+
+  // Snapshot file contents before any write — identical to CLI's originals map
+  const originals = new Map();
 
   for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
     const data = await apiFetch(url, {
@@ -321,13 +369,25 @@ async function _generateOpenAICompatibleReply(url, headers, settings, history, p
     messages.push(msg);
 
     if (!msg.tool_calls?.length) {
-      const reply = typeof msg.content === 'string' ? msg.content.trim() : '';
-      if (!reply) throw new Error(`${providerName} returned empty response. Try another prompt/model.`);
-      return reply;
+      // Build file-change summary then append AI text — same as CLI
+      const aiText = (typeof msg.content === 'string' ? msg.content.trim() : '') || 'Done.';
+      const prefix = formatFileChanges(originals);
+      return prefix ? (aiText ? prefix + '\n\n' + aiText : prefix) : aiText;
     }
 
     for (const tc of msg.tool_calls) {
-      const args = JSON.parse(tc.function.arguments || '{}');
+      let args;
+      try { args = JSON.parse(tc.function.arguments || '{}'); } catch { args = {}; }
+
+      // Snapshot before first write to this file — same as CLI
+      if (FILE_WRITE_TOOLS.has(tc.function.name) && args.file_path) {
+        const fp = resolvePath(args.file_path);
+        if (!originals.has(fp)) {
+          originals.set(fp, fs.existsSync(fp) ? fs.readFileSync(fp, 'utf8') : '');
+        }
+      }
+
+      onToolCall?.(tc.function.name, args.file_path || args.dir_path || args.src || '');
       messages.push({ role: 'tool', tool_call_id: tc.id, content: executeTool(tc.function.name, args) });
     }
   }
@@ -335,7 +395,7 @@ async function _generateOpenAICompatibleReply(url, headers, settings, history, p
   return 'Max tool iterations reached.';
 }
 
-async function _generateGeminiReply(settings, history) {
+async function _generateGeminiReply(settings, history, onToolCall) {
   const modelId = settings.model.replace(/^models\//, '');
   const url = `${API.GEMINI_BASE}/models/${encodeURIComponent(modelId)}:generateContent?key=${encodeURIComponent(settings.apiKey)}`;
 
@@ -343,6 +403,9 @@ async function _generateGeminiReply(settings, history) {
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }],
   }));
+
+  // Snapshot file contents before any write — same as CLI
+  const originals = new Map();
 
   for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
     const data = await apiFetch(url, {
@@ -362,21 +425,34 @@ async function _generateGeminiReply(settings, history) {
 
     const funcCalls = parts.filter(p => p.functionCall);
     if (!funcCalls.length) {
-      const reply = parts.map(p => p.text || '').join('').trim();
-      if (!reply) throw new Error('Gemini returned empty response. Try another prompt/model.');
-      return reply;
+      const aiText = parts.map(p => p.text || '').join('').trim() || 'Done.';
+      const prefix = formatFileChanges(originals);
+      return prefix ? (aiText ? prefix + '\n\n' + aiText : prefix) : aiText;
     }
 
     contents.push({ role: 'model', parts });
-    contents.push({
-      role: 'function',
-      parts: funcCalls.map(p => ({
+
+    // Gemini requires role:'user' for function responses (not 'function')
+    const responseParts = funcCalls.map(p => {
+      const args = p.functionCall.args || {};
+
+      if (FILE_WRITE_TOOLS.has(p.functionCall.name) && args.file_path) {
+        const fp = resolvePath(args.file_path);
+        if (!originals.has(fp)) {
+          originals.set(fp, fs.existsSync(fp) ? fs.readFileSync(fp, 'utf8') : '');
+        }
+      }
+
+      onToolCall?.(p.functionCall.name, args.file_path || args.dir_path || args.src || '');
+      return {
         functionResponse: {
           name: p.functionCall.name,
-          response: { content: executeTool(p.functionCall.name, p.functionCall.args || {}) },
+          response: { content: executeTool(p.functionCall.name, args) },
         },
-      })),
+      };
     });
+
+    contents.push({ role: 'user', parts: responseParts });
   }
 
   return 'Max tool iterations reached.';
@@ -484,9 +560,12 @@ class AryxChatViewProvider {
             webview.postMessage({ type: 'replyStart' });
 
             const historyWithUser = [...this._history, { role: 'user', content: text }];
-            const reply = await generateReply(resolved, historyWithUser, (chunk) => {
-              webview.postMessage({ type: 'assistantMessageChunk', text: chunk });
-            });
+            const reply = await generateReply(
+              resolved,
+              historyWithUser,
+              (chunk) => webview.postMessage({ type: 'assistantMessageChunk', text: chunk }),
+              (toolName, label) => webview.postMessage({ type: 'toolStatus', tool: toolName, label })
+            );
 
             if (resolved.provider !== 'ollama-local') {
               webview.postMessage({ type: 'assistantMessage', text: reply });

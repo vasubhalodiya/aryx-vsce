@@ -54,6 +54,11 @@ function App() {
         appendAssistantChunk(message.text || '');
       }
 
+      if (message?.type === 'toolStatus') {
+        const label = message.label ? `${message.tool}("${message.label}")` : message.tool;
+        addMessage('tool', label, 'tool');
+      }
+
       if (message?.type === 'errorMessage') {
         addMessage('system', message.text || 'Unknown error', 'error');
         setIsLoadingModels(false);

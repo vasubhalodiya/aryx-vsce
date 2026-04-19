@@ -91,6 +91,19 @@
   align-items: center;
 }
 
+.message.tool-call {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.tool-call-text {
+  font-size: 11px;
+  color: var(--ax-fg-muted, #888);
+  font-family: monospace;
+  opacity: 0.75;
+}
+
 /* ─ User bubble: subtle bg, generous rounding ──── */
 .message.user .bubble {
   max-width: 88%;
