@@ -127,6 +127,7 @@ function App() {
   function handleNewChat() {
     setMessages([]);
     setInput('');
+    vscode.postMessage({ type: 'newChat' });
   }
 
   async function handleCopyMessage(messageId, text) {
