@@ -7,6 +7,7 @@ const COMMAND_FOCUS = 'aryxChat.focus';
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
 const OPENROUTER_API_BASE = 'https://openrouter.ai/api/v1';
 const OPENAI_API_BASE = 'https://api.openai.com/v1';
+const OLLAMA_DEFAULT_BASE = 'http://127.0.0.1:11434';
 
 // ─── File Tools ───────────────────────────────────────────────────────────────
 
@@ -206,7 +207,7 @@ class AryxChatViewProvider {
 
         if (message?.type === 'fetchModels') {
           const settings = normalizeSettings(message.settings);
-          if (!settings.apiKey) {
+          if (settings.provider !== 'ollama-local' && !settings.apiKey) {
             webviewView.webview.postMessage({
               type: 'errorMessage',
               text: 'Please enter an API key first.'
@@ -214,7 +215,7 @@ class AryxChatViewProvider {
             return;
           }
 
-          const models = await fetchModels(settings.provider, settings.apiKey);
+          const models = await fetchModels(settings);
           webviewView.webview.postMessage({ type: 'modelsLoaded', models });
 
           if (!settings.model && models.length > 0) {
@@ -228,26 +229,45 @@ class AryxChatViewProvider {
         if (message?.type === 'sendMessage') {
           const text = String(message.text || '').trim();
           const settings = normalizeSettings(message.settings);
+          const activeModel = settings.provider === 'ollama-local'
+            ? (settings.localModel || settings.model)
+            : settings.model;
 
           if (!text) return;
 
-          if (!settings.apiKey || !settings.model) {
+          if (settings.provider !== 'ollama-local' && !settings.apiKey) {
             webviewView.webview.postMessage({
               type: 'errorMessage',
-              text: 'Set API key and model in settings.'
+              text: 'Set API key in settings.'
             });
             return;
           }
 
-          await this.context.globalState.update('aryx.settings', settings);
+          if (!activeModel) {
+            webviewView.webview.postMessage({
+              type: 'errorMessage',
+              text: 'Set model in settings.'
+            });
+            return;
+          }
+
+          const settingsToUse = { ...settings, model: activeModel };
+          await this.context.globalState.update('aryx.settings', settingsToUse);
           webviewView.webview.postMessage({ type: 'replyStart' });
 
           const historyWithUser = [...this._history, { role: 'user', content: text }];
-          const reply = await generateReply(settings, historyWithUser);
+          let reply = '';
+          if (settingsToUse.provider === 'ollama-local') {
+            reply = await generateOllamaReply(settingsToUse, historyWithUser, (chunk) => {
+              webviewView.webview.postMessage({ type: 'assistantMessageChunk', text: chunk });
+            });
+          } else {
+            reply = await generateReply(settingsToUse, historyWithUser);
+            webviewView.webview.postMessage({ type: 'assistantMessage', text: reply });
+          }
 
           this._history = [...historyWithUser, { role: 'assistant', content: reply }];
 
-          webviewView.webview.postMessage({ type: 'assistantMessage', text: reply });
           webviewView.webview.postMessage({ type: 'replyEnd' });
           return;
         }
@@ -360,7 +380,7 @@ class AryxChatViewProvider {
 
         if (message?.type === 'fetchModels') {
           const settings = normalizeSettings(message.settings);
-          if (!settings.apiKey) {
+          if (settings.provider !== 'ollama-local' && !settings.apiKey) {
             webview.postMessage({
               type: 'errorMessage',
               text: 'Please enter an API key first.'
@@ -368,7 +388,7 @@ class AryxChatViewProvider {
             return;
           }
 
-          const models = await fetchModels(settings.provider, settings.apiKey);
+          const models = await fetchModels(settings);
           webview.postMessage({ type: 'modelsLoaded', models });
           return;
         }
@@ -391,21 +411,44 @@ class AryxChatViewProvider {
 // ─── Settings normalization ───────────────────────────────────────────────────
 
 function normalizeSettings(value) {
-  const validProviders = ['google-gemini', 'openrouter', 'openai'];
+  const validProviders = ['google-gemini', 'openrouter', 'openai', 'ollama-local'];
   const provider = validProviders.includes(value?.provider) ? value.provider : 'google-gemini';
   return {
     provider,
     apiKey: typeof value?.apiKey === 'string' ? value.apiKey.trim() : '',
-    model: typeof value?.model === 'string' ? value.model.trim() : ''
+    model: typeof value?.model === 'string' ? value.model.trim() : '',
+    localBaseUrl: typeof value?.localBaseUrl === 'string' && value.localBaseUrl.trim()
+      ? value.localBaseUrl.trim()
+      : OLLAMA_DEFAULT_BASE,
+    localModel: typeof value?.localModel === 'string' ? value.localModel.trim() : ''
   };
 }
 
 // ─── Fetch models (provider-agnostic) ────────────────────────────────────────
 
-async function fetchModels(provider, apiKey) {
-  if (provider === 'openrouter') return fetchOpenRouterModels(apiKey);
-  if (provider === 'openai') return fetchOpenAIModels(apiKey);
-  return fetchGeminiModels(apiKey);
+async function fetchModels(settings) {
+  if (settings.provider === 'ollama-local') return fetchOllamaModels(settings.localBaseUrl);
+  if (settings.provider === 'openrouter') return fetchOpenRouterModels(settings.apiKey);
+  if (settings.provider === 'openai') return fetchOpenAIModels(settings.apiKey);
+  return fetchGeminiModels(settings.apiKey);
+}
+
+async function fetchOllamaModels(baseUrl = OLLAMA_DEFAULT_BASE) {
+  const url = `${sanitizeBaseUrl(baseUrl)}/api/tags`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    const bodyText = await safeReadText(response);
+    throw new Error(parseApiError(response.status, bodyText));
+  }
+
+  const data = await response.json();
+  const items = Array.isArray(data?.models) ? data.models : [];
+  const modelNames = items
+    .map((item) => String(item?.name || '').trim())
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+
+  return [...new Set(modelNames)];
 }
 
 async function fetchGeminiModels(apiKey) {
@@ -480,9 +523,95 @@ async function fetchOpenAIModels(apiKey) {
 // ─── Generate reply (provider-agnostic, with agentic tool loop) ───────────────
 
 async function generateReply(settings, history) {
+  if (settings.provider === 'ollama-local') return generateOllamaReply(settings, history);
   if (settings.provider === 'openrouter') return generateOpenRouterReply(settings, history);
   if (settings.provider === 'openai') return generateOpenAIReply(settings, history);
   return generateGeminiReply(settings, history);
+}
+
+async function generateOllamaReply(settings, history, onChunk) {
+  const modelName = settings.localModel || settings.model;
+  const baseUrl = sanitizeBaseUrl(settings.localBaseUrl || OLLAMA_DEFAULT_BASE);
+  const recentHistory = history.slice(-6);
+  const messages = recentHistory.map((m) => ({
+    role: m.role,
+    content: String(m.content || '').slice(0, 2200),
+  }));
+
+  const response = await fetch(`${baseUrl}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: modelName,
+      messages,
+      stream: true,
+      keep_alive: '30m',
+      options: {
+        temperature: 0.2,
+        num_predict: 180
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const bodyText = await safeReadText(response);
+    throw new Error(parseApiError(response.status, bodyText));
+  }
+
+  if (!response.body) {
+    const data = await response.json();
+    const fallbackReply = String(data?.message?.content || '').trim();
+    if (!fallbackReply) throw new Error('Ollama returned empty response. Try another prompt/model.');
+    return fallbackReply;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  let buffer = '';
+  let fullReply = '';
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    let lineEnd = buffer.indexOf('\n');
+    while (lineEnd !== -1) {
+      const line = buffer.slice(0, lineEnd).trim();
+      buffer = buffer.slice(lineEnd + 1);
+      if (line) {
+        try {
+          const chunk = JSON.parse(line);
+          const textPart = String(chunk?.message?.content || '');
+          if (textPart) {
+            fullReply += textPart;
+            if (typeof onChunk === 'function') onChunk(textPart);
+          }
+        } catch {
+          // Ignore malformed stream chunk.
+        }
+      }
+      lineEnd = buffer.indexOf('\n');
+    }
+  }
+
+  const trailing = buffer.trim();
+  if (trailing) {
+    try {
+      const chunk = JSON.parse(trailing);
+      const textPart = String(chunk?.message?.content || '');
+      if (textPart) {
+        fullReply += textPart;
+        if (typeof onChunk === 'function') onChunk(textPart);
+      }
+    } catch {
+      // Ignore malformed trailing chunk.
+    }
+  }
+
+  const reply = fullReply.trim();
+  if (!reply) throw new Error('Ollama returned empty response. Try another prompt/model.');
+  return reply;
 }
 
 // ─── OpenRouter reply with tool loop ─────────────────────────────────────────
@@ -674,6 +803,10 @@ function toUserError(error) {
     return error.message;
   }
   return 'Unknown error';
+}
+
+function sanitizeBaseUrl(baseUrl) {
+  return String(baseUrl || '').trim().replace(/\/+$/, '') || OLLAMA_DEFAULT_BASE;
 }
 
 function getNonce() {

@@ -1,0 +1,74 @@
+@import '../AI/AI.css';
+
+.local-action-wide {
+  min-width: 330px;
+}
+
+.local-input-wrap {
+  display: flex;
+  align-items: center;
+  width: 330px;
+  background: var(--vscode-input-background, #3c3c3c);
+  border: 1px solid var(--vscode-input-border, #3c3c3c);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.local-input-wrap:focus-within {
+  border-color: var(--vscode-focusBorder, #007acc);
+}
+
+.local-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--vscode-fg, #ccc);
+  font-size: 12px;
+  padding: 7px 10px;
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+
+.local-input:disabled {
+  color: var(--ax-fg-secondary, #8b8b8b);
+  cursor: not-allowed;
+}
+
+.local-input::placeholder {
+  color: var(--ax-fg-secondary, #8b8b8b);
+}
+
+.local-input-icon {
+  color: var(--ax-fg-secondary, #8b8b8b);
+}
+
+.local-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-left: 1px solid var(--vscode-input-border, #3c3c3c);
+}
+
+.local-icon-btn:hover {
+  background-color: var(--ax-bg-hover, rgba(255, 255, 255, 0.05));
+}
+
+.local-save-btn {
+  height: 28px;
+  background: var(--vscode-button-background, #007acc);
+  color: var(--vscode-button-foreground, #fff);
+  font-size: 11px;
+  padding: 0 8px;
+  cursor: pointer;
+  border: none;
+}
+
+.local-save-btn:hover {
+  background: var(--vscode-button-hoverBackground, #1392e6);
+}

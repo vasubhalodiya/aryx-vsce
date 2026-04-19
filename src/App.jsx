@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import ChatPage from './pages/ChatPage/ChatPage';
 import { Settings, ExternalLink, LogOut } from 'lucide-react';
@@ -10,7 +10,9 @@ const vscode = acquireVsCodeApi();
 const DEFAULT_SETTINGS = {
   provider: 'google-gemini',
   apiKey: '',
-  model: ''
+  model: '',
+  localBaseUrl: 'http://127.0.0.1:11434',
+  localModel: ''
 };
 
 function App() {
@@ -26,6 +28,7 @@ function App() {
   const listRef = useRef(null);
   const textareaRef = useRef(null);
   const menuRef = useRef(null);
+  const streamingAssistantIdRef = useRef(null);
 
   useEffect(() => {
     vscode.postMessage({ type: 'getSettings' });
@@ -47,6 +50,10 @@ function App() {
         addMessage('assistant', message.text || '', 'now');
       }
 
+      if (message?.type === 'assistantMessageChunk') {
+        appendAssistantChunk(message.text || '');
+      }
+
       if (message?.type === 'errorMessage') {
         addMessage('system', message.text || 'Unknown error', 'error');
         setIsLoadingModels(false);
@@ -54,10 +61,12 @@ function App() {
 
       if (message?.type === 'replyStart') {
         setIsLoadingReply(true);
+        streamingAssistantIdRef.current = null;
       }
 
       if (message?.type === 'replyEnd') {
         setIsLoadingReply(false);
+        streamingAssistantIdRef.current = null;
       }
     }
 
@@ -103,14 +112,48 @@ function App() {
     ]);
   }
 
+  function appendAssistantChunk(chunk) {
+    const textChunk = String(chunk || '');
+    if (!textChunk) return;
+
+    setMessages((prev) => {
+      const next = [...prev];
+      const currentId = streamingAssistantIdRef.current;
+
+      if (!currentId) {
+        const id = Date.now() + Math.floor(Math.random() * 1000);
+        streamingAssistantIdRef.current = id;
+        next.push({
+          id,
+          role: 'assistant',
+          text: textChunk,
+          meta: 'now'
+        });
+        return next;
+      }
+
+      const idx = next.findIndex((m) => m.id === currentId);
+      if (idx === -1) {
+        streamingAssistantIdRef.current = null;
+        return next;
+      }
+
+      next[idx] = { ...next[idx], text: `${next[idx].text}${textChunk}` };
+      return next;
+    });
+  }
+
   function handleSubmit(event) {
     if (event) event.preventDefault();
 
     const text = input.trim();
     if (!text || isLoadingReply) return;
 
-    if (!settings.apiKey || !settings.model) {
-      addMessage('system', 'Open Settings tab and configure your API key + model first.', 'note');
+    const isLocalProvider = settings.provider === 'ollama-local';
+    const activeModel = isLocalProvider ? (settings.localModel || settings.model) : settings.model;
+
+    if ((!isLocalProvider && !settings.apiKey) || !activeModel) {
+      addMessage('system', 'Open Settings tab and configure your provider and model first.', 'note');
       return;
     }
 
@@ -120,7 +163,7 @@ function App() {
     vscode.postMessage({
       type: 'sendMessage',
       text,
-      settings
+      settings: { ...settings, model: activeModel }
     });
   }
 

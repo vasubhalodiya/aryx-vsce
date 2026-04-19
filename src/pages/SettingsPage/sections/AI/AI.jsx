@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Search, Loader2, Check, Eye, EyeOff, Loader } from 'lucide-react';
+import { ChevronDown, Search, Check, Eye, EyeOff, Loader } from 'lucide-react';
 import './AI.css';
 
 const PROVIDERS = [
   { id: 'google-gemini', label: 'Google Gemini' },
   { id: 'openrouter', label: 'OpenRouter' },
-  { id: 'openai', label: 'OpenAI' }
+  { id: 'openai', label: 'OpenAI' },
+  { id: 'ollama-local', label: 'Local (Ollama)' }
 ];
 
 export default function AI({ vscode }) {
@@ -34,8 +35,8 @@ export default function AI({ vscode }) {
       if (msg?.type === 'settingsLoaded') {
         const s = msg.settings || {};
         if (s.provider) setProvider(s.provider);
-        if (s.apiKey) setApiKey(s.apiKey);
-        // Don't show model yet — store it pending until models load
+        if (typeof s.apiKey === 'string') setApiKey(s.apiKey);
+        if (s.provider === 'ollama-local' && s.localModel) pendingModelRef.current = s.localModel;
         if (s.model) pendingModelRef.current = s.model;
       }
 
@@ -69,7 +70,8 @@ export default function AI({ vscode }) {
 
   // Auto-fetch models when provider or apiKey changes (with debounce)
   useEffect(() => {
-    if (!apiKey.trim()) {
+    const isLocalProvider = provider === 'ollama-local';
+    if (!isLocalProvider && !apiKey.trim()) {
       setModels([]);
       setIsLoadingModels(false);
       return;
@@ -193,7 +195,9 @@ export default function AI({ vscode }) {
                 ? 'Your Google AI Studio API key'
                 : provider === 'openai'
                 ? 'Your OpenAI API key'
-                : 'Your OpenRouter API key'}
+                : provider === 'openrouter'
+                ? 'Your OpenRouter API key'
+                : 'Not required for local Ollama'}
             </div>
           </div>
           <div className="setting-action">
@@ -201,17 +205,19 @@ export default function AI({ vscode }) {
               <input
                 type={showApiKey ? 'text' : 'password'}
                 className="api-key-input"
-                placeholder="Enter your API key"
+                placeholder={provider === 'ollama-local' ? 'Not required for local Ollama' : 'Enter your API key'}
                 value={apiKey}
                 onChange={handleApiKeyChange}
                 onBlur={handleApiKeyBlur}
                 spellCheck={false}
+                disabled={provider === 'ollama-local'}
               />
               <button
                 className="eye-btn"
                 type="button"
                 onClick={() => setShowApiKey(!showApiKey)}
                 title={showApiKey ? 'Hide' : 'Show'}
+                disabled={provider === 'ollama-local'}
               >
                 {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
               </button>
@@ -226,7 +232,7 @@ export default function AI({ vscode }) {
           <div className="setting-info">
             <div className="setting-name">Model</div>
             <div className="setting-desc">
-              {!apiKey.trim()
+              {provider !== 'ollama-local' && !apiKey.trim()
                 ? 'Enter an API key above to load available models'
                 : isLoadingModels
                 ? 'Loading models...'
@@ -235,9 +241,9 @@ export default function AI({ vscode }) {
           </div>
           <div className="setting-action" ref={modelDropdownRef}>
             <div
-              className={`ai-dropdown-trigger model-trigger ${!apiKey.trim() ? 'disabled' : ''}`}
+              className={`ai-dropdown-trigger model-trigger ${!apiKey.trim() && provider !== 'ollama-local' ? 'disabled' : ''}`}
               onClick={() => {
-                if (apiKey.trim() && !isLoadingModels) {
+                if ((apiKey.trim() || provider === 'ollama-local') && !isLoadingModels) {
                   setShowModelDropdown(!showModelDropdown);
                 }
               }}
