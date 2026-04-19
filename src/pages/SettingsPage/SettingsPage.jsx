@@ -15,7 +15,7 @@ function SettingsApp() {
   const tabs = [
     { id: 'general', icon: <Settings size={16} />, label: 'General' },
     { id: 'ai', icon: <Cpu size={16} />, label: 'API Integration' },
-    { id: 'local-model', icon: <Server size={16} />, label: 'Local Model' },
+    { id: 'local-model', icon: <Server size={14} />, label: 'Local Model' },
     // { id: 'config', icon: <Sliders size={16} />, label: 'Configuration' },
     // { id: 'personal', icon: <Palette size={16} />, label: 'Personalization' },
     // { id: 'mcp', icon: <Server size={16} />, label: 'MCP servers' },
