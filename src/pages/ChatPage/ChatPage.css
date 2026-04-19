@@ -128,7 +128,6 @@
   font-size: 13px;
   line-height: 1.6;
   letter-spacing: .005em;
-  white-space: pre-wrap;
   word-break: normal;
   overflow-wrap: anywhere;
 }
@@ -323,100 +322,3 @@
   transform: none;
 }
 
-/* ══════════════════════════════════════════════════
-   MARKDOWN IN MESSAGES — Rich text styling
-   ══════════════════════════════════════════════════ */
-.bubble h1,
-.bubble h2,
-.bubble h3 {
-  margin-top: 10px;
-  margin-bottom: 5px;
-  color: var(--ax-fg);
-  font-weight: 600;
-}
-
-.bubble h1 {
-  font-size: 16px;
-}
-
-.bubble h2 {
-  font-size: 14px;
-}
-
-.bubble h3 {
-  font-size: 13px;
-}
-
-.bubble p {
-  margin-bottom: 6px;
-  line-height: 1.6;
-}
-
-.bubble ul,
-.bubble ol {
-  margin-left: 18px;
-  margin-bottom: 6px;
-}
-
-.bubble li {
-  margin-bottom: 2px;
-}
-
-.bubble code {
-  background: var(--ax-bg-code);
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: var(--ax-font-mono);
-}
-
-.bubble pre {
-  background: var(--ax-bg-code);
-  padding: 10px 12px;
-  border-radius: var(--r-md);
-  overflow-x: auto;
-  margin: 8px 0;
-  border: 1px solid var(--ax-border);
-}
-
-.bubble pre code {
-  background: transparent;
-  padding: 0;
-  font-size: 12px;
-}
-
-.bubble a {
-  color: var(--ax-fg-link);
-  text-decoration: none;
-}
-
-.bubble a:hover {
-  text-decoration: underline;
-}
-
-.bubble blockquote {
-  border-left: 3px solid var(--ax-border);
-  padding-left: 10px;
-  color: var(--ax-fg-secondary);
-  font-style: italic;
-  margin: 6px 0;
-}
-
-.bubble table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 8px 0;
-  font-size: 12px;
-}
-
-.bubble th,
-.bubble td {
-  border: 1px solid var(--ax-border);
-  padding: 5px 8px;
-  text-align: left;
-}
-
-.bubble th {
-  background: var(--ax-bg-code);
-  font-weight: 600;
-}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import AryxLogo from '../../components/AryxLogo/AryxLogo';
 import Loader from '../../components/Loader/Loader';
+import Markdown from '../../components/Markdown/Markdown';
 import './ChatPage.css';
 
 export default function ChatPage({
@@ -38,7 +39,9 @@ export default function ChatPage({
           return (
             <div className={`message ${item.role}`} key={item.id}>
               <div className="message-row">
-                <div className="bubble">{item.text}</div>
+                {item.role === 'assistant'
+                  ? <Markdown text={item.text} />
+                  : <div className="bubble">{item.text}</div>}
               </div>
               {(item.role === 'user' || item.role === 'assistant') && (
                 <div className="copy-row">
