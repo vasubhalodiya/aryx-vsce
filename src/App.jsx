@@ -81,6 +81,10 @@ function App() {
   }, [messages, isLoadingReply]);
 
   useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
@@ -123,6 +127,7 @@ function App() {
       if (!currentId) {
         const id = Date.now() + Math.floor(Math.random() * 1000);
         streamingAssistantIdRef.current = id;
+        setIsLoadingReply(false);
         next.push({
           id,
           role: 'assistant',

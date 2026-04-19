@@ -1,0 +1,39 @@
+/* ══════════════════════════════════════════════════
+   ARYX LOADER — spinner + shimmer text
+   ══════════════════════════════════════════════════ */
+.aryx-loader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.aryx-loader-icon {
+  color: #a0a0a0;
+  font-size: 14px;
+  line-height: 1;
+  min-width: 14px;
+  text-align: center;
+}
+
+.aryx-loader-text {
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: .01em;
+  font-weight: 600;
+}
+
+/* Character shimmer states — gray scale */
+.ch-base   { color: #7a7a7a; }
+.ch-dim    { color: #909090; }
+.ch-mid    { color: #b0b0b0; }
+.ch-bright { color: #d4d4d4; }
+
+/* ══════════════════════════════════════════════════
+   SHIMMER OVERLAY — kept for .shimmer bubble wrapper
+   ══════════════════════════════════════════════════ */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}

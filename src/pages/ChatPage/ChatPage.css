@@ -179,6 +179,7 @@
   justify-content: center;
   cursor: pointer;
   transition: background .1s ease, color .1s ease;
+  padding: 2px
 }
 
 .copy-btn:hover {
