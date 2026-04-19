@@ -9,10 +9,10 @@ const COMMAND_FOCUS = 'aryxChat.focus';
 const MAX_TOOL_ITERATIONS = 10;
 
 const API = {
-  GEMINI_BASE:     'https://generativelanguage.googleapis.com/v1beta',
+  GEMINI_BASE: 'https://generativelanguage.googleapis.com/v1beta',
   OPENROUTER_BASE: 'https://openrouter.ai/api/v1',
-  OPENAI_BASE:     'https://api.openai.com/v1',
-  OLLAMA_BASE:     'http://127.0.0.1:11434',
+  OPENAI_BASE: 'https://api.openai.com/v1',
+  OLLAMA_BASE: 'http://127.0.0.1:11434',
 };
 
 const VALID_PROVIDERS = ['google-gemini', 'openrouter', 'openai', 'ollama-local'];
@@ -39,8 +39,8 @@ const TOOL_HANDLERS = {
     fs.writeFileSync(fp, a.content || '', 'utf8');
     return `Created: ${fp}`;
   },
-  read_file:   (a) => fs.readFileSync(resolvePath(a.file_path), 'utf8'),
-  write_file:  (a) => {
+  read_file: (a) => fs.readFileSync(resolvePath(a.file_path), 'utf8'),
+  write_file: (a) => {
     const fp = resolvePath(a.file_path);
     mkdirForFile(fp);
     fs.writeFileSync(fp, a.content || '', 'utf8');
@@ -109,29 +109,29 @@ function toolDef(name, description, properties, required = []) {
 }
 
 const FILE_TOOLS = [
-  toolDef('create_file',  'Create a new file with content (fails if already exists)',
+  toolDef('create_file', 'Create a new file with content (fails if already exists)',
     { file_path: { type: 'string' }, content: { type: 'string' } }, ['file_path', 'content']),
-  toolDef('read_file',    'Read and return the full contents of a file',
+  toolDef('read_file', 'Read and return the full contents of a file',
     { file_path: { type: 'string' } }, ['file_path']),
-  toolDef('write_file',   'Overwrite a file with new content (creates if missing)',
+  toolDef('write_file', 'Overwrite a file with new content (creates if missing)',
     { file_path: { type: 'string' }, content: { type: 'string' } }, ['file_path', 'content']),
-  toolDef('append_file',  'Append content to the end of a file',
+  toolDef('append_file', 'Append content to the end of a file',
     { file_path: { type: 'string' }, content: { type: 'string' } }, ['file_path', 'content']),
-  toolDef('edit_file',    'Find old_text in a file and replace it with new_text',
+  toolDef('edit_file', 'Find old_text in a file and replace it with new_text',
     { file_path: { type: 'string' }, old_text: { type: 'string' }, new_text: { type: 'string' } }, ['file_path', 'old_text', 'new_text']),
-  toolDef('delete_file',  'Delete a single file',
+  toolDef('delete_file', 'Delete a single file',
     { file_path: { type: 'string' } }, ['file_path']),
-  toolDef('copy_file',    'Copy a file from src path to dest path',
+  toolDef('copy_file', 'Copy a file from src path to dest path',
     { src: { type: 'string' }, dest: { type: 'string' } }, ['src', 'dest']),
-  toolDef('move_file',    'Move or rename a file from src to dest',
+  toolDef('move_file', 'Move or rename a file from src to dest',
     { src: { type: 'string' }, dest: { type: 'string' } }, ['src', 'dest']),
-  toolDef('list_files',   'List files and folders in a directory',
+  toolDef('list_files', 'List files and folders in a directory',
     { dir_path: { type: 'string' } }),
-  toolDef('make_dir',     'Create a directory and any missing parent directories',
+  toolDef('make_dir', 'Create a directory and any missing parent directories',
     { dir_path: { type: 'string' } }, ['dir_path']),
-  toolDef('delete_dir',   'Recursively delete a directory and all its contents',
+  toolDef('delete_dir', 'Recursively delete a directory and all its contents',
     { dir_path: { type: 'string' } }, ['dir_path']),
-  toolDef('file_exists',  'Check whether a file or directory exists',
+  toolDef('file_exists', 'Check whether a file or directory exists',
     { file_path: { type: 'string' } }, ['file_path']),
 ];
 
@@ -157,12 +157,12 @@ function normalizeSettings(value) {
   const provider = VALID_PROVIDERS.includes(value?.provider) ? value.provider : 'google-gemini';
   return {
     provider,
-    apiKey:       typeof value?.apiKey      === 'string' ? value.apiKey.trim()       : '',
-    model:        typeof value?.model       === 'string' ? value.model.trim()        : '',
+    apiKey: typeof value?.apiKey === 'string' ? value.apiKey.trim() : '',
+    model: typeof value?.model === 'string' ? value.model.trim() : '',
     localBaseUrl: typeof value?.localBaseUrl === 'string' && value.localBaseUrl.trim()
       ? value.localBaseUrl.trim()
       : API.OLLAMA_BASE,
-    localModel:   typeof value?.localModel  === 'string' ? value.localModel.trim()  : '',
+    localModel: typeof value?.localModel === 'string' ? value.localModel.trim() : '',
   };
 }
 
@@ -171,9 +171,9 @@ function normalizeSettings(value) {
 async function fetchModels(settings) {
   switch (settings.provider) {
     case 'ollama-local': return _fetchOllamaModels(settings.localBaseUrl);
-    case 'openrouter':   return _fetchOpenRouterModels(settings.apiKey);
-    case 'openai':       return _fetchOpenAIModels(settings.apiKey);
-    default:             return _fetchGeminiModels(settings.apiKey);
+    case 'openrouter': return _fetchOpenRouterModels(settings.apiKey);
+    case 'openai': return _fetchOpenAIModels(settings.apiKey);
+    default: return _fetchGeminiModels(settings.apiKey);
   }
 }
 
@@ -191,7 +191,7 @@ async function _fetchGeminiModels(apiKey) {
   return dedupeSorted(
     (data?.models ?? [])
       .filter(item => {
-        const name    = String(item?.name || '');
+        const name = String(item?.name || '');
         const methods = Array.isArray(item?.supportedGenerationMethods) ? item.supportedGenerationMethods : [];
         return name.includes('gemini') && methods.includes('generateContent');
       })
@@ -223,23 +223,23 @@ async function _fetchOpenAIModels(apiKey) {
 async function generateReply(settings, history, onChunk) {
   switch (settings.provider) {
     case 'ollama-local': return _generateOllamaReply(settings, history, onChunk);
-    case 'openrouter':   return _generateOpenAICompatibleReply(
+    case 'openrouter': return _generateOpenAICompatibleReply(
       `${API.OPENROUTER_BASE}/chat/completions`,
       { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://aryx.dev', 'X-Title': 'Aryx VS Code Extension' },
       settings, history, 'OpenRouter'
     );
-    case 'openai':       return _generateOpenAICompatibleReply(
+    case 'openai': return _generateOpenAICompatibleReply(
       `${API.OPENAI_BASE}/chat/completions`,
       { 'Authorization': `Bearer ${settings.apiKey}`, 'Content-Type': 'application/json' },
       settings, history, 'OpenAI'
     );
-    default:             return _generateGeminiReply(settings, history);
+    default: return _generateGeminiReply(settings, history);
   }
 }
 
 async function _generateOllamaReply(settings, history, onChunk) {
   const modelName = settings.localModel || settings.model;
-  const baseUrl   = sanitizeBaseUrl(settings.localBaseUrl || API.OLLAMA_BASE);
+  const baseUrl = sanitizeBaseUrl(settings.localBaseUrl || API.OLLAMA_BASE);
 
   const messages = [
     { role: 'system', content: getSystemPrompt() },
@@ -262,7 +262,7 @@ async function _generateOllamaReply(settings, history, onChunk) {
   });
 
   if (!response.body) {
-    const data  = await response.json();
+    const data = await response.json();
     const reply = String(data?.message?.content || '').trim();
     if (!reply) throw new Error('Ollama returned empty response. Try another prompt/model.');
     return reply;
@@ -272,16 +272,16 @@ async function _generateOllamaReply(settings, history, onChunk) {
 }
 
 async function _streamOllamaBody(body, onChunk) {
-  const reader  = body.getReader();
+  const reader = body.getReader();
   const decoder = new TextDecoder('utf-8');
-  let buffer    = '';
+  let buffer = '';
   let fullReply = '';
 
   const processLine = (line) => {
     if (!line) return;
     try {
       const chunk = JSON.parse(line);
-      const text  = String(chunk?.message?.content || '');
+      const text = String(chunk?.message?.content || '');
       if (text) { fullReply += text; onChunk?.(text); }
     } catch { /* ignore malformed chunk */ }
   };
@@ -404,11 +404,11 @@ class AryxChatViewProvider {
    * @param {vscode.ExtensionContext} context
    */
   constructor(context) {
-    this._context       = context;
-    this._extensionUri  = context.extensionUri;
-    this._sidebarView   = null;
+    this._context = context;
+    this._extensionUri = context.extensionUri;
+    this._sidebarView = null;
     this._settingsPanel = null;
-    this._history       = [];
+    this._history = [];
   }
 
   /**
@@ -465,7 +465,7 @@ class AryxChatViewProvider {
             const text = String(message.text || '').trim();
             if (!text) return;
 
-            const settings    = normalizeSettings(message.settings);
+            const settings = normalizeSettings(message.settings);
             const activeModel = settings.provider === 'ollama-local'
               ? (settings.localModel || settings.model)
               : settings.model;
@@ -513,10 +513,10 @@ class AryxChatViewProvider {
   }
 
   _buildHtml(webview, scriptFile, cssFile, extraCsp = '') {
-    const nonce     = getNonce();
+    const nonce = getNonce();
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', scriptFile));
-    const cssUri    = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', cssFile));
-    const title     = scriptFile.startsWith('settings') ? 'Aryx Settings' : 'Aryx';
+    const cssUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'dist', cssFile));
+    const title = scriptFile.startsWith('settings') ? 'Aryx Settings' : 'Aryx';
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -549,7 +549,7 @@ class AryxChatViewProvider {
     this._settingsPanel.iconPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'aryx-logo.svg');
 
     const { webview } = this._settingsPanel;
-    const cspConnect  = `connect-src ${API.GEMINI_BASE} ${API.OPENROUTER_BASE} ${API.OPENAI_BASE} ${API.OLLAMA_BASE}; `;
+    const cspConnect = `connect-src ${API.GEMINI_BASE} ${API.OPENROUTER_BASE} ${API.OPENAI_BASE} ${API.OLLAMA_BASE}; `;
     webview.html = this._buildHtml(webview, 'settings.js', 'settings.css', cspConnect);
 
     webview.onDidReceiveMessage(async (message) => {
@@ -609,7 +609,7 @@ async function safeReadText(response) {
 function parseApiError(status, bodyText) {
   try {
     const data = JSON.parse(bodyText);
-    const msg  = data?.error?.message
+    const msg = data?.error?.message
       || data?.message
       || (typeof data?.error === 'string' ? data.error : null)
       || bodyText;
@@ -637,6 +637,6 @@ function getNonce() {
   return Array.from({ length: 32 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = { activate, deactivate };
