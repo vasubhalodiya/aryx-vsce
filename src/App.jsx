@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import ChatPage from './pages/ChatPage/ChatPage';
-import { Settings, ExternalLink, LogOut } from 'lucide-react';
+import { ExternalLink, LogIn, LogOut, Settings } from 'lucide-react';
 import './styles/variables.css';
 import './App.css';
 
@@ -12,7 +12,24 @@ const DEFAULT_SETTINGS = {
   apiKey: '',
   model: '',
   localBaseUrl: 'http://127.0.0.1:11434',
-  localModel: ''
+  localModel: '',
+};
+
+const DEFAULT_AUTH_STATE = {
+  isLoggedIn: false,
+  uid: '',
+  email: '',
+  displayName: '',
+  photoURL: '',
+  planMessages: 0,
+  messageCount: 0,
+  subscriptionPlan: 'free',
+};
+
+const PLAN_LABELS = {
+  free: 'Free',
+  pro: 'Pro',
+  max: 'Max',
 };
 
 function App() {
@@ -24,20 +41,53 @@ function App() {
   const [isLoadingReply, setIsLoadingReply] = useState(false);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState(null);
+  const [authState, setAuthState] = useState(DEFAULT_AUTH_STATE);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isLoginPending, setIsLoginPending] = useState(false);
+  const [loginUrl, setLoginUrl] = useState('');
 
   const listRef = useRef(null);
   const textareaRef = useRef(null);
   const menuRef = useRef(null);
   const streamingAssistantIdRef = useRef(null);
 
+  const planName = PLAN_LABELS[authState.subscriptionPlan] || 'Free';
+  const isLimitReached = authState.planMessages > 0 && authState.messageCount >= authState.planMessages;
+  const showUpgradeButton = authState.subscriptionPlan === 'free';
+  const showPlanName = authState.subscriptionPlan === 'pro' || authState.subscriptionPlan === 'max';
+  const selectedModel = settings.provider === 'ollama-local'
+    ? (settings.localModel || settings.model)
+    : settings.model;
+
   useEffect(() => {
     vscode.postMessage({ type: 'getSettings' });
+    vscode.postMessage({ type: 'getAuthState' });
 
     function onMessage(event) {
       const message = event.data;
 
       if (message?.type === 'settingsLoaded') {
         setSettings({ ...DEFAULT_SETTINGS, ...(message.settings || {}) });
+      }
+
+      if (message?.type === 'authStateLoaded') {
+        setAuthState({ ...DEFAULT_AUTH_STATE, ...(message.auth || {}) });
+        setIsAuthLoading(false);
+        setIsLoginPending(false);
+      }
+
+      if (message?.type === 'authLoginPending') {
+        setIsLoginPending(true);
+        setLoginUrl(String(message.loginUrl || ''));
+      }
+
+      if (message?.type === 'authLoginError') {
+        setIsLoginPending(false);
+        addMessage('system', message.text || 'Login failed. Please try again.', 'error');
+      }
+
+      if (message?.type === 'planLimitReached') {
+        addMessage('system', 'Your plan limit has been reached. Upgrade to continue.', 'error');
       }
 
       if (message?.type === 'modelsLoaded') {
@@ -86,8 +136,9 @@ function App() {
   }, [messages, isLoadingReply]);
 
   useEffect(() => {
+    if (!authState.isLoggedIn) return;
     textareaRef.current?.focus();
-  }, []);
+  }, [authState.isLoggedIn]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -116,8 +167,8 @@ function App() {
         id: Date.now() + Math.floor(Math.random() * 1000),
         role,
         text: value,
-        meta
-      }
+        meta,
+      },
     ]);
   }
 
@@ -137,7 +188,7 @@ function App() {
           id,
           role: 'assistant',
           text: textChunk,
-          meta: 'now'
+          meta: 'now',
         });
         return next;
       }
@@ -159,6 +210,16 @@ function App() {
     const text = input.trim();
     if (!text || isLoadingReply) return;
 
+    if (!authState.isLoggedIn) {
+      addMessage('system', 'Please login first to continue.', 'error');
+      return;
+    }
+
+    if (isLimitReached) {
+      addMessage('system', 'Your plan limit has been reached. Upgrade to continue.', 'error');
+      return;
+    }
+
     const isLocalProvider = settings.provider === 'ollama-local';
     const activeModel = isLocalProvider ? (settings.localModel || settings.model) : settings.model;
 
@@ -173,7 +234,7 @@ function App() {
     vscode.postMessage({
       type: 'sendMessage',
       text,
-      settings: { ...settings, model: activeModel }
+      settings: { ...settings, model: activeModel },
     });
   }
 
@@ -207,24 +268,81 @@ function App() {
     vscode.postMessage({ type: 'openSettings' });
   };
 
-  // Static options for design as requested
-  const staticEmail = "login email id";
-  
+  const startLogin = () => {
+    setIsLoginPending(true);
+    vscode.postMessage({ type: 'startLogin' });
+  };
+
+  const handleLogout = () => {
+    setIsMenuOpen(false);
+    setMessages([]);
+    setInput('');
+    vscode.postMessage({ type: 'logout' });
+  };
+
+  const openUpgrade = () => {
+    vscode.postMessage({ type: 'openUpgrade' });
+  };
+
+  if (isAuthLoading) {
+    return (
+      <div className="login-shell">
+        <div className="login-card">
+          <div className="login-title">Loading account...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authState.isLoggedIn) {
+    return (
+      <div className="login-shell">
+        <div className="login-card">
+          <div className="login-title">Login Required</div>
+          <div className="login-desc">
+            Sign in with Aryx account to use chat, plan limits, and upgrade flow.
+          </div>
+          <button className="login-btn" type="button" onClick={startLogin} disabled={isLoginPending}>
+            <LogIn size={14} />
+            {isLoginPending ? 'Waiting for browser login...' : 'Login with Google'}
+          </button>
+          {loginUrl && (
+            <div className="login-note">
+              Browser didn&apos;t open? click login again. URL: {loginUrl}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-shell">
-      {/* ── Top Toolbar ──────────────────────────── */}
       <div className="topbar">
         <div className="brand-small">Tasks</div>
         <div className="topbar-actions">
-          <button
+          {showPlanName && (
+            <div className={`plan-pill plan-${authState.subscriptionPlan}`}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="icon-xxs"><path d="M17.665 10C17.665 10.6877 17.1785 11.2454 16.5488 11.3945L16.4219 11.4189C14.7098 11.6665 13.6129 12.1305 12.877 12.8623C12.1414 13.5938 11.6742 14.6843 11.4238 16.3887C11.3197 17.0973 10.7182 17.665 9.96484 17.665C9.27085 17.665 8.68836 17.1772 8.53613 16.5215C8.12392 14.7459 7.6623 13.619 6.95703 12.8652C6.31314 12.1772 5.39414 11.7268 3.88672 11.4688L3.57715 11.4199C2.88869 11.319 2.33496 10.734 2.33496 10C2.33496 9.26603 2.88869 8.681 3.57715 8.58008L3.88672 8.53125C5.39414 8.27321 6.31314 7.82277 6.95703 7.13477C7.6623 6.38104 8.12392 5.25413 8.53613 3.47852L8.56934 3.35742C8.76133 2.76356 9.31424 2.33496 9.96484 2.33496C10.7182 2.33497 11.3197 2.9027 11.4238 3.61133L11.5283 4.22266C11.7954 5.58295 12.2334 6.49773 12.877 7.1377C13.6129 7.86952 14.7098 8.33351 16.4219 8.58105C17.1119 8.68101 17.665 9.26667 17.665 10Z" fill="currentColor"></path></svg>
+              <span>{planName}</span>
+            </div>
+          )}
+          
+          {showUpgradeButton && (
+            <button className="upgrade-btn" type="button" title="Upgrade" onClick={openUpgrade}>
+              <span>Upgrade</span>
+            </button>
+          )}
+
+          {/* <button
             className="icon-btn"
             type="button"
             title="History"
             onClick={() => addMessage('system', 'History is not available yet.', 'note')}
           >
             <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg" className="icon-xs hover:opacity-80"><path d="M17.1348 10.5455C17.1348 7.04681 14.2986 4.21057 10.7998 4.21057C8.59509 4.21063 6.65256 5.33708 5.5176 7.04749H7.34963C7.7169 7.04749 8.01467 7.34525 8.01467 7.71252C8.01447 8.07963 7.71678 8.37756 7.34963 8.37756H4.09963C3.73265 8.37737 3.43479 8.07951 3.43459 7.71252V4.46252C3.43459 4.09537 3.73253 3.79768 4.09963 3.79749C4.4669 3.79749 4.76467 4.09526 4.76467 4.46252V5.81995C6.16735 4.03097 8.34882 2.88054 10.7998 2.88049C15.0331 2.88049 18.4649 6.31227 18.4649 10.5455C18.4649 14.7788 15.0331 18.2106 10.7998 18.2106C7.32665 18.2105 4.39432 15.9006 3.45217 12.735C3.34762 12.3831 3.54851 12.0126 3.90041 11.9078C4.25233 11.8033 4.62283 12.0042 4.72756 12.3561C5.50658 14.9731 7.93122 16.8804 10.7998 16.8805C14.2986 16.8805 17.1348 14.0443 17.1348 10.5455ZM10.1348 7.54553C10.1348 7.17832 10.4326 6.88058 10.7998 6.88049C11.1671 6.88049 11.4649 7.17826 11.4649 7.54553V10.5455C11.4649 10.7219 11.3952 10.8915 11.2705 11.0162L9.27053 13.0162C9.01096 13.2757 8.58981 13.2755 8.3301 13.0162C8.0704 12.7565 8.0704 12.3345 8.3301 12.0748L10.1348 10.2701V7.54553Z" fill="currentColor"></path></svg>
-          </button>
-          
+          </button> */}
+
           <div className="menu-container" ref={menuRef}>
             <button
               className="icon-btn"
@@ -237,10 +355,14 @@ function App() {
 
             {isMenuOpen && (
               <div className="dropdown-menu">
-                <div className="dropdown-item static-item">
-                  {staticEmail}
-                </div>
-                <div className="dropdown-item static-item">
+                <div className="dropdown-item static-item">{authState.email || 'Signed in'}</div>
+                {showPlanName && (
+                  <div className="dropdown-item static-item">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className="icon-xxs"><path d="M17.665 10C17.665 10.6877 17.1785 11.2454 16.5488 11.3945L16.4219 11.4189C14.7098 11.6665 13.6129 12.1305 12.877 12.8623C12.1414 13.5938 11.6742 14.6843 11.4238 16.3887C11.3197 17.0973 10.7182 17.665 9.96484 17.665C9.27085 17.665 8.68836 17.1772 8.53613 16.5215C8.12392 14.7459 7.6623 13.619 6.95703 12.8652C6.31314 12.1772 5.39414 11.7268 3.88672 11.4688L3.57715 11.4199C2.88869 11.319 2.33496 10.734 2.33496 10C2.33496 9.26603 2.88869 8.681 3.57715 8.58008L3.88672 8.53125C5.39414 8.27321 6.31314 7.82277 6.95703 7.13477C7.6623 6.38104 8.12392 5.25413 8.53613 3.47852L8.56934 3.35742C8.76133 2.76356 9.31424 2.33496 9.96484 2.33496C10.7182 2.33497 11.3197 2.9027 11.4238 3.61133L11.5283 4.22266C11.7954 5.58295 12.2334 6.49773 12.877 7.1377C13.6129 7.86952 14.7098 8.33351 16.4219 8.58105C17.1119 8.68101 17.665 9.26667 17.665 10Z" fill="currentColor"></path></svg>
+                    Aryx {planName}
+                  </div>
+                )}
+                <div className="dropdown-item clickable" onClick={openUpgrade}>
                   <ExternalLink size={14} />
                   Upgrade to higher limits
                 </div>
@@ -249,7 +371,7 @@ function App() {
                   <Settings size={14} />
                   Aryx settings
                 </div>
-                <div className="dropdown-item clickable">
+                <div className="dropdown-item clickable" onClick={handleLogout}>
                   <LogOut size={14} />
                   Logout
                 </div>
@@ -268,7 +390,14 @@ function App() {
         </div>
       </div>
 
-      <ChatPage 
+      {isLimitReached && (
+        <div className="limit-banner">
+          Plan limit reached ({authState.messageCount}/{authState.planMessages}).
+          {showUpgradeButton ? ' Click Upgrade to continue.' : ''}
+        </div>
+      )}
+
+      <ChatPage
         messages={messages}
         isLoadingReply={isLoadingReply}
         listRef={listRef}
@@ -279,6 +408,7 @@ function App() {
         textareaRef={textareaRef}
         handleKeyDown={handleKeyDown}
         handleSubmit={handleSubmit}
+        selectedModel={selectedModel}
       />
     </div>
   );

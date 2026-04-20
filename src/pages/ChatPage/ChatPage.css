@@ -286,6 +286,28 @@
   color: var(--ax-fg);
 }
 
+.action-dot-model {
+  width: auto;
+  max-width: 120px;
+  height: 25px;
+  border: 1px solid #434343;
+  padding: 0;
+  gap: 3px;
+  overflow: hidden;
+  justify-content: flex-start;
+  padding: 0px 5px;
+}
+
+.action-dot-model-text {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
 .chat-input-actions-right {
   display: flex;
   align-items: center;

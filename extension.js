@@ -1,6 +1,8 @@
 const vscode = require('vscode');
 const fs = require('node:fs');
 const path = require('node:path');
+const { createServer } = require('node:http');
+const { URL } = require('node:url');
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -13,9 +15,16 @@ const API = {
   OPENROUTER_BASE: 'https://openrouter.ai/api/v1',
   OPENAI_BASE: 'https://api.openai.com/v1',
   OLLAMA_BASE: 'http://127.0.0.1:11434',
+  WEB_URL: process.env.ARYX_WEB_URL || 'https://aryx.vasuu.in',
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || 'aryx-lab',
+  FIREBASE_API_KEY: process.env.FIREBASE_API_KEY || 'AIzaSyDlD8_gQBTlCbje-zrAf10lo-mY4tYGSVQ',
 };
 
 const VALID_PROVIDERS = ['google-gemini', 'openrouter', 'openai', 'ollama-local'];
+const FREE_PLAN_MESSAGES = 20;
+const PLAN_POLL_INTERVAL_MS = 5000;
+const PLAN_POLL_MAX_MS = 5 * 60 * 1000;
+const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${API.FIREBASE_PROJECT_ID}/databases/(default)/documents`;
 
 // ─── File System Tools ────────────────────────────────────────────────────────
 
@@ -208,6 +217,164 @@ function normalizeSettings(value) {
       ? value.localBaseUrl.trim()
       : API.OLLAMA_BASE,
     localModel: typeof value?.localModel === 'string' ? value.localModel.trim() : '',
+  };
+}
+
+function normalizeAuthRecord(value) {
+  if (!value || typeof value !== 'object' || !value.uid) return null;
+  return {
+    uid: String(value.uid || '').trim(),
+    email: String(value.email || '').trim(),
+    displayName: String(value.displayName || '').trim(),
+    photoURL: String(value.photoURL || '').trim(),
+    idToken: String(value.idToken || '').trim(),
+    refreshToken: String(value.refreshToken || '').trim(),
+    idTokenExpiry: Number(value.idTokenExpiry || 0),
+    planMessages: Number.isFinite(Number(value.planMessages)) ? Number(value.planMessages) : FREE_PLAN_MESSAGES,
+    messageCount: Number.isFinite(Number(value.messageCount)) ? Number(value.messageCount) : 0,
+    subscriptionPlan: String(value.subscriptionPlan || 'free').trim().toLowerCase() || 'free',
+  };
+}
+
+function toWebAuthState(auth) {
+  if (!auth?.uid) {
+    return {
+      isLoggedIn: false,
+      uid: '',
+      email: '',
+      displayName: '',
+      photoURL: '',
+      planMessages: 0,
+      messageCount: 0,
+      subscriptionPlan: 'free',
+    };
+  }
+
+  return {
+    isLoggedIn: true,
+    uid: auth.uid,
+    email: auth.email,
+    displayName: auth.displayName,
+    photoURL: auth.photoURL,
+    planMessages: auth.planMessages,
+    messageCount: auth.messageCount,
+    subscriptionPlan: auth.subscriptionPlan,
+  };
+}
+
+function toFirestoreValue(v) {
+  if (v instanceof Date) return { timestampValue: v.toISOString() };
+  if (typeof v === 'string') return { stringValue: v };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  if (Number.isInteger(v)) return { integerValue: String(v) };
+  return { doubleValue: v };
+}
+
+async function patchFirestore(pathName, fields, token) {
+  const mask = Object.keys(fields)
+    .map((k) => `updateMask.fieldPaths=${encodeURIComponent(k)}`)
+    .join('&');
+  const entries = Object.entries(fields).map(([k, v]) => [k, toFirestoreValue(v)]);
+
+  await fetch(`${FIRESTORE_BASE}/${pathName}?${mask}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ fields: Object.fromEntries(entries) }),
+  });
+}
+
+async function fetchUserPlan(uid, token) {
+  const res = await fetch(`${FIRESTORE_BASE}/users/${uid}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  const f = data?.fields || {};
+  return {
+    planMessages: Number(f.planMessages?.integerValue ?? FREE_PLAN_MESSAGES),
+    messageCount: Number(f.messageCount?.integerValue ?? 0),
+    subscriptionPlan: String(f.subscriptionPlan?.stringValue ?? 'free').toLowerCase(),
+  };
+}
+
+async function incrementMessageCount(uid, count, token) {
+  await patchFirestore(`users/${uid}`, { messageCount: count }, token);
+}
+
+async function refreshAuthToken(auth) {
+  const res = await fetch(
+    `https://securetoken.googleapis.com/v1/token?key=${API.FIREBASE_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(auth.refreshToken)}`,
+    }
+  );
+
+  if (!res.ok) return null;
+  const json = await res.json();
+  return {
+    ...auth,
+    idToken: String(json.id_token || ''),
+    refreshToken: String(json.refresh_token || auth.refreshToken || ''),
+    idTokenExpiry: Date.now() + 3_600_000,
+  };
+}
+
+async function startAuthCallbackServer() {
+  let resolveCallback;
+  let rejectCallback;
+
+  const waitForCallback = new Promise((resolve, reject) => {
+    resolveCallback = resolve;
+    rejectCallback = reject;
+  });
+
+  const server = createServer((req, res) => {
+    if (!req.url) return;
+    const parsed = new URL(req.url, 'http://localhost');
+    if (parsed.pathname !== '/callback') {
+      res.writeHead(404);
+      res.end();
+      return;
+    }
+
+    const uid = parsed.searchParams.get('uid');
+    const email = parsed.searchParams.get('email');
+    const displayName = parsed.searchParams.get('displayName') || '';
+    const photoURL = parsed.searchParams.get('photoURL') || '';
+    const idToken = parsed.searchParams.get('idToken');
+    const refreshToken = parsed.searchParams.get('refreshToken');
+
+    if (!uid || !email || !idToken || !refreshToken) {
+      res.writeHead(302, { Location: `${API.WEB_URL}/auth/error` });
+      res.end();
+      rejectCallback(new Error('Missing required params in callback'));
+      server.close();
+      return;
+    }
+
+    res.writeHead(302, { Location: `${API.WEB_URL}/auth/success` });
+    res.end();
+    server.close();
+    resolveCallback({ uid, email, displayName, photoURL, idToken, refreshToken });
+  });
+
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const port = server.address().port;
+
+  const timeout = setTimeout(() => {
+    try { server.close(); } catch { }
+    rejectCallback(new Error('Login timed out. Please try again.'));
+  }, 5 * 60 * 1000);
+
+  return {
+    port,
+    waitForCallback: waitForCallback.finally(() => clearTimeout(timeout)),
   };
 }
 
@@ -485,6 +652,9 @@ class AryxChatViewProvider {
     this._sidebarView = null;
     this._settingsPanel = null;
     this._history = [];
+    this._planPollingInterval = null;
+    this._planPollingTimeout = null;
+    this._isLoginInProgress = false;
   }
 
   /**
@@ -502,6 +672,28 @@ class AryxChatViewProvider {
       const { webview } = webviewView;
       try {
         switch (message?.type) {
+          case 'getAuthState':
+            await this._postAuthState(webview);
+            return;
+
+          case 'startLogin':
+            await this._startLoginFlow(webview);
+            return;
+
+          case 'logout':
+            await this._clearAuthRecord();
+            this._history = [];
+            await this._postAuthState(webview);
+            return;
+
+          case 'openUpgrade':
+            await this._openUpgradeAndStartPlanPolling(webview);
+            return;
+
+          case 'refreshPlan':
+            await this._refreshPlanAndPublish(webview);
+            return;
+
           case 'openSettings':
             this._openSettingsPanel();
             return;
@@ -541,6 +733,21 @@ class AryxChatViewProvider {
             const text = String(message.text || '').trim();
             if (!text) return;
 
+            const auth = await this._ensureValidAuthRecord();
+            if (!auth) {
+              webview.postMessage({ type: 'errorMessage', text: 'Please login first to continue.' });
+              await this._postAuthState(webview);
+              return;
+            }
+
+            const limitReached = auth.planMessages > 0 && auth.messageCount >= auth.planMessages;
+            if (limitReached) {
+              webview.postMessage({ type: 'planLimitReached' });
+              webview.postMessage({ type: 'errorMessage', text: 'Your plan limit has been reached. Upgrade to continue.' });
+              await this._postAuthState(webview);
+              return;
+            }
+
             const settings = normalizeSettings(message.settings);
             const activeModel = settings.provider === 'ollama-local'
               ? (settings.localModel || settings.model)
@@ -572,6 +779,22 @@ class AryxChatViewProvider {
             }
 
             this._history = [...historyWithUser, { role: 'assistant', content: reply }];
+
+            const latestAuth = normalizeAuthRecord(this._context.globalState.get('aryx.auth'));
+            if (latestAuth?.uid) {
+              latestAuth.messageCount += 1;
+              await this._persistAuthRecord(latestAuth);
+              try {
+                const valid = await this._ensureValidAuthRecord();
+                if (valid?.idToken) {
+                  await incrementMessageCount(valid.uid, valid.messageCount, valid.idToken);
+                }
+              } catch {
+                // Ignore sync failures; local state is source of truth for current session UX.
+              }
+              await this._postAuthState(webview);
+            }
+
             webview.postMessage({ type: 'replyEnd' });
             return;
           }
@@ -589,6 +812,128 @@ class AryxChatViewProvider {
 
   async _persistSettings(settings) {
     await this._context.globalState.update('aryx.settings', settings);
+  }
+
+  _loadAuthRecord() {
+    return normalizeAuthRecord(this._context.globalState.get('aryx.auth'));
+  }
+
+  async _persistAuthRecord(auth) {
+    await this._context.globalState.update('aryx.auth', auth);
+  }
+
+  async _clearAuthRecord() {
+    await this._context.globalState.update('aryx.auth', undefined);
+    this._stopPlanPolling();
+  }
+
+  async _postAuthState(webview) {
+    if (!webview) return;
+    const auth = this._loadAuthRecord();
+    webview.postMessage({ type: 'authStateLoaded', auth: toWebAuthState(auth) });
+  }
+
+  async _ensureValidAuthRecord() {
+    const auth = this._loadAuthRecord();
+    if (!auth?.uid) return null;
+
+    if (!auth.idToken || Date.now() >= auth.idTokenExpiry) {
+      const refreshed = await refreshAuthToken(auth);
+      if (!refreshed?.idToken) {
+        await this._clearAuthRecord();
+        return null;
+      }
+      await this._persistAuthRecord(refreshed);
+      return refreshed;
+    }
+
+    return auth;
+  }
+
+  async _refreshPlanAndPublish(webview) {
+    if (!webview) return;
+    const auth = await this._ensureValidAuthRecord();
+    if (!auth) {
+      await this._postAuthState(webview);
+      return;
+    }
+
+    try {
+      const plan = await fetchUserPlan(auth.uid, auth.idToken);
+      if (plan) {
+        const updated = { ...auth, ...plan };
+        await this._persistAuthRecord(updated);
+      }
+    } catch {
+      // Keep existing local plan if Firestore is temporarily unreachable.
+    }
+
+    await this._postAuthState(webview);
+  }
+
+  _stopPlanPolling() {
+    if (this._planPollingInterval) {
+      clearInterval(this._planPollingInterval);
+      this._planPollingInterval = null;
+    }
+    if (this._planPollingTimeout) {
+      clearTimeout(this._planPollingTimeout);
+      this._planPollingTimeout = null;
+    }
+  }
+
+  _startPlanPolling() {
+    this._stopPlanPolling();
+    this._planPollingInterval = setInterval(() => {
+      this._refreshPlanAndPublish(this._sidebarView?.webview).catch(() => { });
+    }, PLAN_POLL_INTERVAL_MS);
+    this._planPollingTimeout = setTimeout(() => this._stopPlanPolling(), PLAN_POLL_MAX_MS);
+  }
+
+  async _openUpgradeAndStartPlanPolling(webview) {
+    const auth = await this._ensureValidAuthRecord();
+    if (!auth?.uid) {
+      webview.postMessage({ type: 'errorMessage', text: 'Please login first to upgrade.' });
+      await this._postAuthState(webview);
+      return;
+    }
+
+    const upgradeUrl = `${API.WEB_URL}/upgrade?uid=${encodeURIComponent(auth.uid)}`;
+    await vscode.env.openExternal(vscode.Uri.parse(upgradeUrl));
+    this._startPlanPolling();
+  }
+
+  async _startLoginFlow(webview) {
+    if (this._isLoginInProgress) return;
+    this._isLoginInProgress = true;
+
+    try {
+      const { port, waitForCallback } = await startAuthCallbackServer();
+      const loginUrl = `${API.WEB_URL}/auth?cli_port=${port}`;
+      webview.postMessage({ type: 'authLoginPending', loginUrl });
+      await vscode.env.openExternal(vscode.Uri.parse(loginUrl));
+
+      const data = await waitForCallback;
+      const auth = {
+        uid: data.uid,
+        email: data.email,
+        displayName: data.displayName || '',
+        photoURL: data.photoURL || '',
+        idToken: data.idToken,
+        refreshToken: data.refreshToken,
+        idTokenExpiry: Date.now() + 3_600_000,
+        planMessages: FREE_PLAN_MESSAGES,
+        messageCount: 0,
+        subscriptionPlan: 'free',
+      };
+
+      await this._persistAuthRecord(auth);
+      await this._refreshPlanAndPublish(webview);
+    } catch (error) {
+      webview.postMessage({ type: 'authLoginError', text: toUserError(error) });
+    } finally {
+      this._isLoginInProgress = false;
+    }
   }
 
   _buildHtml(webview, scriptFile, cssFile, extraCsp = '') {

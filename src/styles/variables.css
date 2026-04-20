@@ -288,6 +288,11 @@ body {
   user-select: none;
 }
 
+.dropdown-item svg {
+  width: 14px;
+  height: 14px;
+}
+
 .dropdown-item.static-item {
   color: var(--ax-fg-secondary);
 }
