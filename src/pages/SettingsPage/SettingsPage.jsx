@@ -10,10 +10,10 @@ import './SettingsPage.css';
 const vscode = acquireVsCodeApi();
 
 function SettingsApp() {
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState('ai');
 
   const tabs = [
-    { id: 'general', icon: <Settings size={16} />, label: 'General' },
+    // { id: 'general', icon: <Settings size={16} />, label: 'General' },
     { id: 'ai', icon: <Cpu size={16} />, label: 'API Integration' },
     { id: 'local-model', icon: <Server size={14} />, label: 'Local Model' },
     // { id: 'config', icon: <Sliders size={16} />, label: 'Configuration' },
@@ -38,7 +38,7 @@ function SettingsApp() {
       </div>
       
       <div className="settings-content">
-        {activeTab === 'general' && <General />}
+        {/* {activeTab === 'general' && <General />} */}
         {activeTab === 'ai' && <AI vscode={vscode} />}
         {activeTab === 'local-model' && <LocalModel vscode={vscode} />}
       </div>
